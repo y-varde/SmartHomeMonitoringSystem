@@ -5,7 +5,10 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
@@ -22,13 +25,14 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
     ListView lvNearby;
-    ArrayAdapter<String> deviceListAdapter;
+    DeviceListAdapter deviceListAdapter;
     ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
 
     @Override
@@ -61,19 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupUIComponents() {
         lvNearby = findViewById(R.id.lvNearby);
-        deviceListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        deviceListAdapter = new DeviceListAdapter(this, deviceList);
         lvNearby.setAdapter(deviceListAdapter);
-
-        lvNearby.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BluetoothDevice selectedDevice = deviceList.get(position);
-                Intent intent = new Intent(MainActivity.this, DeviceDetailActivity.class);
-                intent.putExtra("deviceName", selectedDevice.getName());
-                intent.putExtra("deviceAddress", selectedDevice.getAddress());
-                startActivity(intent);
-            }
-        });
     }
 
     private void startBluetoothScan() {
@@ -84,14 +77,13 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = result.getDevice();
                 if (!deviceList.contains(device)) {
                     deviceList.add(device);
-                    deviceListAdapter.add(device.getName() + "\n" + device.getAddress());
                     deviceListAdapter.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onScanFailed(int errorCode) {
-                Log.e("EEEPOIS", "Scan failed with error: " + errorCode);
+                Log.e("MainActivity", "Scan failed with error: " + errorCode);
             }
         });
     }
@@ -112,6 +104,42 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{permission}, 1);
             }
+        }
+    }
+
+    private class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
+        private Context context;
+        private ArrayList<BluetoothDevice> devices;
+
+        public DeviceListAdapter(Context context, ArrayList<BluetoothDevice> devices) {
+            super(context, 0, devices);
+            this.context = context;
+            this.devices = devices;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).inflate(R.layout.list_item_device, parent, false);
+            }
+
+            final BluetoothDevice device = devices.get(position);
+            TextView txtDeviceName = convertView.findViewById(R.id.txtDeviceName);
+            Button btnConnect = convertView.findViewById(R.id.btnConnect);
+
+            txtDeviceName.setText(device.getName() + "\n" + device.getAddress());
+
+            btnConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, DeviceDetailActivity.class);
+                    intent.putExtra("deviceName", device.getName());
+                    intent.putExtra("deviceAddress", device.getAddress());
+                    startActivity(intent);
+                }
+            });
+
+            return convertView;
         }
     }
 }
