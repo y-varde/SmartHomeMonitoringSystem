@@ -24,67 +24,15 @@
         <ListView
             android:id="@+id/lvNearby"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
     </ScrollView>
 
-    <EditText
-        android:id="@+id/txtURL"
+    <TextView
+        android:id="@+id/messageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="www.vizability-system.com" />
+        android:text="Message will appear here"
+        android:padding="16dp"
+        android:textSize="16sp" />
 
-    <GridLayout
-        android:id="@+id/controlA"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:columnCount="3"
-        android:orientation="horizontal"
-        android:rowCount="1">
-
-        <TextView
-            android:id="@+id/txtLat"
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:text="Lat" />
-
-        <TextView
-            android:id="@+id/txtLon"
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:text="Lon" />
-
-        <TextView
-            android:id="@+id/txtAlt"
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:text="Alt" />
-    </GridLayout>
-
-    <GridLayout
-        android:id="@+id/controlB"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:columnCount="2"
-        android:orientation="horizontal"
-        android:rowCount="1">
-
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:onClick="onClickSave"
-            android:text="Save" />
-        <Button
-            android:id="@+id/btnAbout"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:onClick="onClickAbout"
-            android:text="About" />
-    </GridLayout>
 </LinearLayout>
