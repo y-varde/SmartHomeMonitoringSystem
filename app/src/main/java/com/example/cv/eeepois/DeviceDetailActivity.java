@@ -27,6 +27,8 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private static final UUID SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
 
+    private StringBuilder messageBuilder = new StringBuilder();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,14 +85,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                final String message = new String(characteristic.getValue());
-                Log.d(TAG, "Characteristic read: " + message);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        txtDeviceMessage.setText(message);
-                    }
-                });
+                updateMessage(characteristic);
             } else {
                 Log.w(TAG, "Characteristic read failed with status: " + status);
             }
@@ -98,14 +93,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            final String message = new String(characteristic.getValue());
-            Log.d(TAG, "Characteristic changed: " + message);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    txtDeviceMessage.setText(message);
-                }
-            });
+            updateMessage(characteristic);
         }
     };
 
@@ -129,6 +117,27 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         } else {
             Log.w(TAG, "Service not found");
+        }
+    }
+
+    private void updateMessage(BluetoothGattCharacteristic characteristic) {
+        final String chunk = new String(characteristic.getValue());
+        Log.d(TAG, "Characteristic updated: " + chunk);
+
+        // Append the chunk to the StringBuilder
+        messageBuilder.append(chunk);
+
+        // Check if the chunk contains a newline character, indicating the end of the message
+        if (chunk.contains("\n")) {
+            final String completeMessage = messageBuilder.toString().trim();
+            messageBuilder.setLength(0); // Clear the StringBuilder for the next message
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txtDeviceMessage.setText(completeMessage);
+                }
+            });
         }
     }
 

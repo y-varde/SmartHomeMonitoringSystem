@@ -7,7 +7,7 @@ const int rxPinBLE = 3;
 const int txPinBLE = 2;
 
 SoftwareSerial BT05(rxPinBLE, txPinBLE);
-char cSend[] = "DSD Tech Connected";
+char cSend[] = "Hello from Arduino!!!!";
 bool bReceived = false;
 
 void setup() 
@@ -20,6 +20,5 @@ void setup()
 void loop() 
 {
   BT05.println(cSend);
-  Serial.println("Message sent to Bluetooth device: DSD Tech Connected");
-  delay(1000); // Delay to avoid spamming the message
+  delay(1000);
 }
