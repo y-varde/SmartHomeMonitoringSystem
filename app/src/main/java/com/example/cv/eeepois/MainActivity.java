@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     DeviceListAdapter deviceListAdapter;
     ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
 
+    // This method is called when the activity is created
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         startBluetoothScan();
     }
 
+    // This method initializes the Bluetooth adapter
     private void initializeBluetooth() {
         BluetoothManager btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = btManager.getAdapter();
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // This method checks for the necessary permissions
     private void checkPermissions() {
         checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, "This app needs location access", "Please grant location access so this app can detect peripherals.");
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, "This app needs fine location access", "Please grant location access so this app can detect peripherals.");
@@ -63,24 +66,29 @@ public class MainActivity extends AppCompatActivity {
         checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, "This app needs to read from the phone storage", "Please grant read access so this app can function.");
     }
 
+    // This method sets up the UI components of the main activity
     private void setupUIComponents() {
         lvNearby = findViewById(R.id.lvNearby);
         deviceListAdapter = new DeviceListAdapter(this, deviceList);
         lvNearby.setAdapter(deviceListAdapter);
     }
 
+    // This method starts the Bluetooth scan (discovery) process
     private void startBluetoothScan() {
         btScanner = btAdapter.getBluetoothLeScanner();
         btScanner.startScan(new ScanCallback() {
+            // This method is called when a new device is discovered during the scan
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 BluetoothDevice device = result.getDevice();
-                if (!deviceList.contains(device)) {
+                //only add DSD TECH bluetooth devices
+                if (device.getName() != null && device.getName().contains("DSD TECH") && !deviceList.contains(device)) {
                     deviceList.add(device);
                     deviceListAdapter.notifyDataSetChanged();
                 }
             }
 
+            // This method is called when the scan fails
             @Override
             public void onScanFailed(int errorCode) {
                 Log.e("MainActivity", "Scan failed with error: " + errorCode);
@@ -88,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // This method checks for a specific permission and requests it if necessary
     private void checkPermission(final String permission, String rationaleTitle, String rationaleMessage) {
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
@@ -107,16 +116,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //This class is used to create a custom list adapter for the ListView
     private class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
         private Context context;
         private ArrayList<BluetoothDevice> devices;
 
+        // Constructor
         public DeviceListAdapter(Context context, ArrayList<BluetoothDevice> devices) {
             super(context, 0, devices);
             this.context = context;
             this.devices = devices;
         }
 
+        // This method creates the view for each item in the list
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
@@ -129,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
             txtDeviceName.setText(device.getName() + "\n" + device.getAddress());
 
+            // This listener is called when the "Connect" button is clicked
             btnConnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

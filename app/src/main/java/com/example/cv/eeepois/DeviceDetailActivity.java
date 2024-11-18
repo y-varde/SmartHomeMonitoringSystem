@@ -29,6 +29,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
     private StringBuilder messageBuilder = new StringBuilder();
 
+    // This method is called when the activity is created
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         connectToDevice(deviceAddress);
     }
 
+    // This method is called when the activity is destroyed (e.g. when the user presses the back button)
     private void connectToDevice(String MAC) {
         BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(MAC);
         if (device == null) {
@@ -59,6 +61,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        // This method is called when the connection state changes (e.g. when the device connects or disconnects)
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -71,6 +74,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
+        // This method is called when services are discovered on the device (e.g. after connecting)
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -82,6 +86,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
+        // This method is called when a characteristic is read from the device
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -91,12 +96,14 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
+        // This method is called when a characteristic is changed on the device (e.g. when a notification is received)
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             updateMessage(characteristic);
         }
     };
 
+    // This method reads a characteristic from the device
     private void readCharacteristic() {
         if (bluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
@@ -120,6 +127,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         }
     }
 
+    // This method updates the message displayed on the screen
     private void updateMessage(BluetoothGattCharacteristic characteristic) {
         final String chunk = new String(characteristic.getValue());
         Log.d(TAG, "Characteristic updated: " + chunk);
@@ -141,6 +149,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         }
     }
 
+    // This method displays a toast message on the screen
     private void showToast(final String message) {
         runOnUiThread(new Runnable() {
             @Override
