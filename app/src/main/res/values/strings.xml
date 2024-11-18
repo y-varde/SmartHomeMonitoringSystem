@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EEEPOIS</string>
+    <string name="app_name">Smart Home Monitoring System</string>
     <string name="device_name">Device Name</string>
     <string name="device_address">Device Address</string>
     <string name="device_message">Device Message</string>
