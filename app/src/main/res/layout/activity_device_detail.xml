@@ -1,32 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".DeviceDetailActivity">
 
     <TextView
         android:id="@+id/txtDeviceName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/device_name"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp"/>
+        android:text="Device Name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/txtDeviceAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/device_address"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp"/>
+        android:text="Device Address"
+        app:layout_constraintTop_toBottomOf="@id/txtDeviceName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/txtTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temperature: -- C"
+        app:layout_constraintTop_toBottomOf="@id/txtDeviceAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
+    <Button
+        android:id="@+id/btnToggleTempUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show in Fahrenheit"
+        app:layout_constraintTop_toTopOf="@id/txtTemperature"
+        app:layout_constraintBottom_toBottomOf="@id/txtTemperature"
+        app:layout_constraintStart_toEndOf="@id/txtTemperature"
+        android:layout_marginStart="8dp" />
 
     <TextView
         android:id="@+id/txtDeviceMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Message will appear here"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        android:text="Device Message"
+        app:layout_constraintTop_toBottomOf="@id/txtTemperature"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

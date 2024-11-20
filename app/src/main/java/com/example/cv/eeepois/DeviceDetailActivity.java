@@ -9,6 +9,8 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,14 +24,16 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private BluetoothGatt bluetoothGatt;
     private TextView txtDeviceName;
     private TextView txtDeviceAddress;
+    private TextView txtTemperature;
     private TextView txtDeviceMessage;
+    private Button btnToggleTempUnit;
 
     private static final UUID SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
 
     private StringBuilder messageBuilder = new StringBuilder();
+    private boolean showInFahrenheit = false;
 
-    // This method is called when the activity is created
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,19 +41,26 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
         txtDeviceName = findViewById(R.id.txtDeviceName);
         txtDeviceAddress = findViewById(R.id.txtDeviceAddress);
+        txtTemperature = findViewById(R.id.txtTemperature);
         txtDeviceMessage = findViewById(R.id.txtDeviceMessage);
+        btnToggleTempUnit = findViewById(R.id.btnToggleTempUnit);
 
-        // Retrieve device information from the Intent
         String deviceName = getIntent().getStringExtra("deviceName");
         String deviceAddress = getIntent().getStringExtra("deviceAddress");
 
         txtDeviceName.setText(deviceName);
         txtDeviceAddress.setText(deviceAddress);
 
+        btnToggleTempUnit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTemperatureUnit();
+            }
+        });
+
         connectToDevice(deviceAddress);
     }
 
-    // This method is called when the activity is destroyed (e.g. when the user presses the back button)
     private void connectToDevice(String MAC) {
         BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(MAC);
         if (device == null) {
@@ -61,7 +72,6 @@ public class DeviceDetailActivity extends AppCompatActivity {
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
-        // This method is called when the connection state changes (e.g. when the device connects or disconnects)
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -74,7 +84,6 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
-        // This method is called when services are discovered on the device (e.g. after connecting)
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -86,7 +95,6 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
-        // This method is called when a characteristic is read from the device
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -96,14 +104,12 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
 
-        // This method is called when a characteristic is changed on the device (e.g. when a notification is received)
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             updateMessage(characteristic);
         }
     };
 
-    // This method reads a characteristic from the device
     private void readCharacteristic() {
         if (bluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
@@ -117,7 +123,6 @@ public class DeviceDetailActivity extends AppCompatActivity {
                 boolean result = bluetoothGatt.readCharacteristic(characteristic);
                 Log.d(TAG, "Read characteristic initiated: " + result);
 
-                // Enable notifications if the characteristic supports it
                 bluetoothGatt.setCharacteristicNotification(characteristic, true);
             } else {
                 Log.w(TAG, "Characteristic not found");
@@ -127,29 +132,85 @@ public class DeviceDetailActivity extends AppCompatActivity {
         }
     }
 
-    // This method updates the message displayed on the screen
     private void updateMessage(BluetoothGattCharacteristic characteristic) {
         final String chunk = new String(characteristic.getValue());
         Log.d(TAG, "Characteristic updated: " + chunk);
 
-        // Append the chunk to the StringBuilder
         messageBuilder.append(chunk);
 
-        // Check if the chunk contains the null terminator, indicating the end of the message
         if (chunk.contains("\0")) {
             final String completeMessage = messageBuilder.toString().replace("\0", "").trim();
-            messageBuilder.setLength(0); // Clear the StringBuilder for the next message
+            messageBuilder.setLength(0);
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    txtDeviceMessage.setText(completeMessage);
+                    displayMessage(completeMessage);
                 }
             });
         }
     }
 
-    // This method displays a toast message on the screen
+    private void displayMessage(String message) {
+        String[] lines = message.split("\n");
+        if (lines.length > 0) {
+            String temperatureLine = lines[0];
+            if (showInFahrenheit) {
+                temperatureLine = convertToFahrenheit(temperatureLine);
+            }
+            txtTemperature.setText(temperatureLine);
+        }
+        StringBuilder otherLines = new StringBuilder();
+        for (int i = 1; i < lines.length; i++) {
+            otherLines.append(lines[i]).append("\n");
+        }
+        txtDeviceMessage.setText(otherLines.toString().trim());
+    }
+
+    private String convertToFahrenheit(String temperatureLine) {
+        if (temperatureLine.startsWith("Temperature: ")) {
+            String tempStr = temperatureLine.substring("Temperature: ".length(), temperatureLine.indexOf(" C"));
+            try {
+                int tempCelsius = Integer.parseInt(tempStr);
+                int tempFahrenheit = (int) (tempCelsius * 9.0 / 5.0 + 32);
+                return "Temperature: " + tempFahrenheit + " F";
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        return temperatureLine;
+    }
+
+    private void toggleTemperatureUnit() {
+        showInFahrenheit = !showInFahrenheit;
+        if (showInFahrenheit) {
+            btnToggleTempUnit.setText("Show in Celsius");
+        } else {
+            btnToggleTempUnit.setText("Show in Fahrenheit");
+        }
+
+        String currentTemperature = txtTemperature.getText().toString();
+        if (showInFahrenheit) {
+            txtTemperature.setText(convertToFahrenheit(currentTemperature));
+        } else {
+            txtTemperature.setText(convertToCelsius(currentTemperature));
+        }
+    }
+
+    private String convertToCelsius(String temperatureLine) {
+        if (temperatureLine.startsWith("Temperature: ")) {
+            String tempStr = temperatureLine.substring("Temperature: ".length(), temperatureLine.indexOf(" F"));
+            try {
+                int tempFahrenheit = Integer.parseInt(tempStr);
+                int tempCelsius = (int) ((tempFahrenheit - 32) * 5.0 / 9.0);
+                return "Temperature: " + tempCelsius + " C";
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        return temperatureLine;
+    }
+
     private void showToast(final String message) {
         runOnUiThread(new Runnable() {
             @Override
