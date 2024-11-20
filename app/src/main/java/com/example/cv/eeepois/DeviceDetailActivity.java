@@ -135,9 +135,9 @@ public class DeviceDetailActivity extends AppCompatActivity {
         // Append the chunk to the StringBuilder
         messageBuilder.append(chunk);
 
-        // Check if the chunk contains a newline character, indicating the end of the message
-        if (chunk.contains("\n")) {
-            final String completeMessage = messageBuilder.toString().trim();
+        // Check if the chunk contains the null terminator, indicating the end of the message
+        if (chunk.contains("\0")) {
+            final String completeMessage = messageBuilder.toString().replace("\0", "").trim();
             messageBuilder.setLength(0); // Clear the StringBuilder for the next message
 
             runOnUiThread(new Runnable() {
