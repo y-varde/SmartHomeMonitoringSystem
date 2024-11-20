@@ -7,10 +7,14 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,18 +25,23 @@ import android.util.Log;
 public class DeviceDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "DeviceDetailActivity";
+    private static final String PREFS_NAME = "DeviceDetailPrefs";
+    private static final String KEY_ARMED_STATE = "armedState";
     private BluetoothGatt bluetoothGatt;
     private TextView txtDeviceName;
     private TextView txtDeviceAddress;
     private TextView txtTemperature;
     private TextView txtDeviceMessage;
     private Button btnToggleTempUnit;
+    private Button btnArmSystem;
+    private Spinner modeSpinner;
 
     private static final UUID SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
 
     private StringBuilder messageBuilder = new StringBuilder();
     private boolean showInFahrenheit = false;
+    private boolean isArmed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,8 @@ public class DeviceDetailActivity extends AppCompatActivity {
         txtTemperature = findViewById(R.id.txtTemperature);
         txtDeviceMessage = findViewById(R.id.txtDeviceMessage);
         btnToggleTempUnit = findViewById(R.id.btnToggleTempUnit);
+        btnArmSystem = findViewById(R.id.btnArmSystem);
+        modeSpinner = findViewById(R.id.mode_spinner);
 
         String deviceName = getIntent().getStringExtra("deviceName");
         String deviceAddress = getIntent().getStringExtra("deviceAddress");
@@ -57,6 +68,36 @@ public class DeviceDetailActivity extends AppCompatActivity {
                 toggleTemperatureUnit();
             }
         });
+
+        btnArmSystem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleArmSystem();
+            }
+        });
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.mode_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        modeSpinner.setAdapter(adapter);
+
+        modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedMode = parent.getItemAtPosition(position).toString();
+                handleModeChange(selectedMode);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        // Load the saved armed state
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        isArmed = preferences.getBoolean(KEY_ARMED_STATE, false);
+        updateArmButton();
 
         connectToDevice(deviceAddress);
     }
@@ -209,6 +250,53 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         }
         return temperatureLine;
+    }
+
+    private void handleModeChange(String selectedMode) {
+        if ("Admin Mode".equals(selectedMode)) {
+            btnArmSystem.setVisibility(View.VISIBLE);
+        } else {
+            btnArmSystem.setVisibility(View.GONE);
+        }
+    }
+
+    private void toggleArmSystem() {
+        isArmed = !isArmed;
+        updateArmButton();
+
+        // Save the armed state
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_ARMED_STATE, isArmed);
+        editor.apply();
+
+        // Send the appropriate message to the Bluetooth device
+        if (isArmed) {
+            sendMessageToDevice("A");
+        } else {
+            sendMessageToDevice("D");
+        }
+    }
+
+    private void updateArmButton() {
+        if (isArmed) {
+            btnArmSystem.setText("DISARM SYSTEM");
+        } else {
+            btnArmSystem.setText("ARM SYSTEM");
+        }
+    }
+
+    private void sendMessageToDevice(String message) {
+        if (bluetoothGatt != null) {
+            BluetoothGattService service = bluetoothGatt.getService(SERVICE_UUID);
+            if (service != null) {
+                BluetoothGattCharacteristic characteristic = service.getCharacteristic(CHARACTERISTIC_UUID);
+                if (characteristic != null) {
+                    characteristic.setValue(message);
+                    bluetoothGatt.writeCharacteristic(characteristic);
+                }
+            }
+        }
     }
 
     private void showToast(final String message) {

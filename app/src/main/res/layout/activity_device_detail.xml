@@ -26,12 +26,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp" />
 
+    <Spinner
+        android:id="@+id/mode_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/mode_array"
+        app:layout_constraintTop_toBottomOf="@id/txtDeviceAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
     <TextView
         android:id="@+id/txtTemperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Temperature: -- C"
-        app:layout_constraintTop_toBottomOf="@id/txtDeviceAddress"
+        app:layout_constraintTop_toBottomOf="@id/mode_spinner"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp" />
@@ -46,14 +56,27 @@
         app:layout_constraintStart_toEndOf="@id/txtTemperature"
         android:layout_marginStart="8dp" />
 
-    <TextView
-        android:id="@+id/txtDeviceMessage"
+    <Button
+        android:id="@+id/btnArmSystem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Device Message"
+        android:text="ARM SYSTEM"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/txtTemperature"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/txtDeviceMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Device Message"
+        app:layout_constraintTop_toBottomOf="@id/btnArmSystem"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
 </android.support.constraint.ConstraintLayout>

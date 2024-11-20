@@ -3,4 +3,8 @@
     <string name="device_name">Device Name</string>
     <string name="device_address">Device Address</string>
     <string name="device_message">Device Message</string>
+    <string-array name="mode_array">
+        <item>User Mode</item>
+        <item>Admin Mode</item>
+    </string-array>
 </resources>

@@ -19,8 +19,9 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="135dp"
+        android:layout_height="327dp"
         android:fillViewport="true">
+
         <ListView
             android:id="@+id/lvNearby"
             android:layout_width="match_parent"
