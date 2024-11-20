@@ -8,6 +8,8 @@ const int buzzerPin = 8; // Define the buzzer pin
 
 SoftwareSerial btSerial(4, 3); // RX, TX
 
+bool isArmed = false;
+
 void setup() 
 {
   Serial.begin(9600);
@@ -15,6 +17,8 @@ void setup()
 }
 
 void loop() {
+  checkBluetoothCommand();
+
   String data = "";
 
   data += readTemperature();
@@ -24,9 +28,21 @@ void loop() {
   data += '\0'; // Add null terminator at the end of the data
 
   btSerial.print(data); // Transmit data via Bluetooth
-  Serial.println(data); // Print data to Serial Monitor
 
   delay(1000); // Transmit every 1000 milliseconds
+}
+
+void checkBluetoothCommand() {
+  if (btSerial.available()) {
+    char command = btSerial.read();
+    if (command == 'A') {
+      isArmed = true;
+      Serial.println("System is armed");
+    } else if (command == 'D') {
+      isArmed = false;
+      Serial.println("System is disarmed");
+    }
+  }
 }
 
 String readTemperature() {
