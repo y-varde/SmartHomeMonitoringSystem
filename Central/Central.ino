@@ -9,6 +9,7 @@ const int buzzerPin = 8; // Define the buzzer pin
 SoftwareSerial btSerial(4, 3); // RX, TX
 
 bool isArmed = false;
+int samplingRate = 1000; // Default sampling rate in milliseconds
 
 void setup() 
 {
@@ -28,20 +29,56 @@ void loop() {
   data += '\0'; // Add null terminator at the end of the data
 
   btSerial.print(data); // Transmit data via Bluetooth
+  Serial.println(data); // Print data to Serial Monitor
 
-  delay(1000); // Transmit every 1000 milliseconds
+  delay(samplingRate); // Transmit every samplingRate milliseconds
 }
 
 void checkBluetoothCommand() {
   if (btSerial.available()) {
     char command = btSerial.read();
-    if (command == 'A') {
-      isArmed = true;
-      Serial.println("System is armed");
-    } else if (command == 'D') {
-      isArmed = false;
-      Serial.println("System is disarmed");
+    switch (command) {
+      case 'A':
+        armSystem();
+        break;
+      case 'D':
+        disarmSystem();
+        break;
+      case 'S':
+        setSamplingRate();
+        break;
     }
+  }
+}
+
+void armSystem() {
+  isArmed = true;
+  Serial.println("System is armed");
+}
+
+void disarmSystem() {
+  isArmed = false;
+  Serial.println("System is disarmed");
+}
+
+void setSamplingRate() {
+  // Read the next characters for the sampling rate
+  String rateStr = "";
+  while (btSerial.available()) {
+    char c = btSerial.read();
+    if (isDigit(c)) {
+      rateStr += c;
+    } else {
+      break;
+    }
+  }
+  if (rateStr.length() > 0) {
+    samplingRate = rateStr.toInt() * 1000; // Convert to milliseconds
+    Serial.print("Sampling rate set to ");
+    Serial.print(samplingRate / 1000);
+    Serial.println(" seconds");
+  } else {
+    Serial.println("Invalid sampling rate");
   }
 }
 

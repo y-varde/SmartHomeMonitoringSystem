@@ -26,22 +26,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp" />
 
-    <Spinner
-        android:id="@+id/mode_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/mode_array"
-        app:layout_constraintTop_toBottomOf="@id/txtDeviceAddress"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
-
     <TextView
         android:id="@+id/txtTemperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Temperature: -- C"
-        app:layout_constraintTop_toBottomOf="@id/mode_spinner"
+        app:layout_constraintTop_toBottomOf="@id/txtDeviceAddress"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp" />
@@ -56,13 +46,79 @@
         app:layout_constraintStart_toEndOf="@id/txtTemperature"
         android:layout_marginStart="8dp" />
 
+    <TextView
+        android:id="@+id/txtHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Humidity: -- %"
+        app:layout_constraintTop_toBottomOf="@id/txtTemperature"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/txtGasConcentration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Concentration: -- ppm"
+        app:layout_constraintTop_toBottomOf="@id/txtHumidity"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp" />
+
+    <Spinner
+        android:id="@+id/mode_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/mode_array"
+        app:layout_constraintTop_toBottomOf="@id/txtGasConcentration"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/txtSamplingRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sampling Rate: 1s"
+        app:layout_constraintTop_toBottomOf="@id/mode_spinner"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:visibility="gone" />
+
+    <SeekBar
+        android:id="@+id/seekBarSamplingRate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:max="10"
+        android:progress="1"
+        app:layout_constraintTop_toBottomOf="@id/txtSamplingRate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnUpdateSamplingRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/seekBarSamplingRate"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
     <Button
         android:id="@+id/btnArmSystem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ARM SYSTEM"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/txtTemperature"
+        app:layout_constraintTop_toBottomOf="@id/btnUpdateSamplingRate"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp" />
