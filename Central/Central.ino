@@ -29,7 +29,6 @@ void loop() {
   data += '\0'; // Add null terminator at the end of the data
 
   btSerial.print(data); // Transmit data via Bluetooth
-  Serial.println(data); // Print data to Serial Monitor
 
   delay(samplingRate); // Transmit every samplingRate milliseconds
 }

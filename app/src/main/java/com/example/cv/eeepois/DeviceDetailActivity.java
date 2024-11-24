@@ -189,6 +189,25 @@ public class DeviceDetailActivity extends AppCompatActivity {
         checkPermissions();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Save the thresholds and armed state when the activity is paused
+        saveThresholds();
+    }
+    
+    private void saveThresholds() {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(KEY_TEMP_MIN_THRESHOLD, Integer.parseInt(edtTempMinThreshold.getText().toString()));
+        editor.putInt(KEY_TEMP_MAX_THRESHOLD, Integer.parseInt(edtTempMaxThreshold.getText().toString()));
+        editor.putInt(KEY_HUMIDITY_THRESHOLD, Integer.parseInt(edtHumidityThreshold.getText().toString()));
+        editor.putInt(KEY_GAS_MIN_THRESHOLD, Integer.parseInt(edtGasMinThreshold.getText().toString()));
+        editor.putInt(KEY_GAS_MAX_THRESHOLD, Integer.parseInt(edtGasMaxThreshold.getText().toString()));
+        editor.putBoolean(KEY_ARMED_STATE, isArmed); // Save the armed state
+        editor.apply();
+    }
+
     private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
             ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
@@ -430,17 +449,6 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private void toggleArmSystem() {
         isArmed = !isArmed;
         updateArmButton();
-
-        // Save the armed state and thresholds
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(KEY_ARMED_STATE, isArmed);
-        editor.putInt(KEY_TEMP_MIN_THRESHOLD, Integer.parseInt(edtTempMinThreshold.getText().toString()));
-        editor.putInt(KEY_TEMP_MAX_THRESHOLD, Integer.parseInt(edtTempMaxThreshold.getText().toString()));
-        editor.putInt(KEY_HUMIDITY_THRESHOLD, Integer.parseInt(edtHumidityThreshold.getText().toString()));
-        editor.putInt(KEY_GAS_MIN_THRESHOLD, Integer.parseInt(edtGasMinThreshold.getText().toString()));
-        editor.putInt(KEY_GAS_MAX_THRESHOLD, Integer.parseInt(edtGasMaxThreshold.getText().toString()));
-        editor.apply();
 
         // Send the appropriate message to the Bluetooth device
         if (isArmed) {
