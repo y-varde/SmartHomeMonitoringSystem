@@ -175,6 +175,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         humidityThreshold = preferences.getInt(KEY_HUMIDITY_THRESHOLD, humidityThreshold);
         gasMinThreshold = preferences.getInt(KEY_GAS_MIN_THRESHOLD, gasMinThreshold);
         gasMaxThreshold = preferences.getInt(KEY_GAS_MAX_THRESHOLD, gasMaxThreshold);
+        samplingRate = preferences.getInt("samplingRate", samplingRate);
 
         // Set the threshold EditText fields with the loaded values
         edtTempMinThreshold.setText(String.valueOf(tempMinThreshold));
@@ -182,6 +183,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         edtHumidityThreshold.setText(String.valueOf(humidityThreshold));
         edtGasMinThreshold.setText(String.valueOf(gasMinThreshold));
         edtGasMaxThreshold.setText(String.valueOf(gasMaxThreshold));
+        seekBarSamplingRate.setProgress(samplingRate - 1);
 
         updateArmButton();
 
@@ -205,6 +207,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         editor.putInt(KEY_GAS_MIN_THRESHOLD, Integer.parseInt(edtGasMinThreshold.getText().toString()));
         editor.putInt(KEY_GAS_MAX_THRESHOLD, Integer.parseInt(edtGasMaxThreshold.getText().toString()));
         editor.putBoolean(KEY_ARMED_STATE, isArmed); // Save the armed state
+        editor.putInt("samplingRate", samplingRate); // Save the sampling rate
         editor.apply();
     }
 
