@@ -64,12 +64,16 @@ void armSystem() {
   isArmed = true;
   Serial.println("System is armed");
   lcd.setCursor(0, 3);
+  lcd.print("                    "); // Clear the line
+  lcd.setCursor(0, 3);
   lcd.print("System is armed");
 }
 
 void disarmSystem() {
   isArmed = false;
   Serial.println("System is disarmed");
+  lcd.setCursor(0, 3);
+  lcd.print("                    "); // Clear the line
   lcd.setCursor(0, 3);
   lcd.print("System is disarmed");
 }
@@ -91,11 +95,15 @@ void setSamplingRate() {
     Serial.print(samplingRate / 1000);
     Serial.println(" seconds");
     lcd.setCursor(0, 3);
+    lcd.print("                    "); // Clear the line
+    lcd.setCursor(0, 3);
     lcd.print("Sampling rate: ");
     lcd.print(samplingRate / 1000);
     lcd.print(" sec");
   } else {
     Serial.println("Invalid sampling rate");
+    lcd.setCursor(0, 3);
+    lcd.print("                    "); // Clear the line
     lcd.setCursor(0, 3);
     lcd.print("Invalid sampling rate");
   }
