@@ -50,20 +50,18 @@ void loop() {
   float deltaY = abs(event.acceleration.y - initialY);
   float deltaZ = abs(event.acceleration.z - initialZ);
 
-  if(bluetooth.available())
-  {
+  if(bluetooth.available()) {
     char value = bluetooth.read();
     if(value == 'A') {armed = true;}
     else if (value == 'D') {armed = false;}
     Serial.println(value);
   }
 
-  if(armed == true)
-  {
+  if(armed == true) {
     // Check for significant movement
     if (deltaX > movementThreshold || deltaY > movementThreshold || deltaZ > movementThreshold) {
       Serial.println("M");
-      bluetooth.write("M");
+      bluetooth.write('M');
 
       // Update initial position after detection
       initialX = event.acceleration.x;
