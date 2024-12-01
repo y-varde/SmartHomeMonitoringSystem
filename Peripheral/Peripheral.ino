@@ -5,12 +5,7 @@
 
 // Create sensor object
 Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
-
-// Bluetooth module pins
-#define BT_RX 10
-#define BT_TX 11
-
-SoftwareSerial bluetooth(BT_RX, BT_TX); // RX, TX
+SoftwareSerial HC12(10,11);
 
 // Define LED pin
 #define LED_PIN 13
@@ -24,7 +19,7 @@ float initialX, initialY, initialZ;
 void setup() {
   // Start serial communication
   Serial.begin(9600);
-  bluetooth.begin(9600);
+  HC12.begin(9600);
 
   // Start the sensor
   if (!accel.begin()) {
@@ -42,10 +37,18 @@ void setup() {
   initialX = event.acceleration.x;
   initialY = event.acceleration.y;
   initialZ = event.acceleration.z;
+  Serial.println("Peripheral Ready");
 }
 
 void loop() {
   // Read accelerometer data
+  HC12.listen();
+  while (HC12.available()) {        // If HC-12 has data
+    Serial.write(HC12.read());      // Send the data to Serial monitor
+  }
+  while (Serial.available()) {      // If Serial monitor has data
+    HC12.write(Serial.read());      // Send that data to HC-12
+  }
   sensors_event_t event;
   accel.getEvent(&event);
 
@@ -71,7 +74,7 @@ void loop() {
   // Check for significant movement
   if (deltaX > movementThreshold || deltaY > movementThreshold || deltaZ > movementThreshold) {
     Serial.println("Object has been opened or moved!");
-    bluetooth.println("Object has been opened or moved!");
+    HC12.println("Object has been opened or moved!");
 
     // Turn the LED on solid for 10 seconds
     digitalWrite(LED_PIN, HIGH);

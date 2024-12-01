@@ -9,8 +9,7 @@ const int gasPin = A3;
 const int tempPin = A1;
 const int buzzerPin = 8; // Define the buzzer pin
 
-// Initialize Bluetooth serial communication
-SoftwareSerial btSerial(4, 3); // RX, TX
+SoftwareSerial HC12(10, 11); // RX, TX
 
 // Create an LCD object with I2C address 0x27, 20 columns, and 4 rows
 LiquidCrystal_I2C lcd(0x27, 20, 4);
@@ -20,14 +19,22 @@ int samplingRate = 1000; // Default sampling rate in milliseconds
 
 void setup() {
   Serial.begin(9600);
-  btSerial.begin(9600); // Initialize Bluetooth serial communication
+  Serial1.begin(9600); // Initialize Bluetooth serial communication
+  HC12.begin(9600); // Initialize HC-12 serial communication
 
   Wire.begin();    // Initialize I2C communication
   lcd.init();      // Initialize the LCD
   lcd.backlight(); // Turn on the backlight
+  Serial.println("Central ready");
 }
 
 void loop() {
+  if (HC12.available())
+  {
+    String hc12Data = HC12.readString(); 
+    Serial.println("HC-12 Data: " + hc12Data);
+  }
+
   checkBluetoothCommand();
 
   String data = "";
@@ -38,19 +45,24 @@ void loop() {
   
   data += '\0'; // Add null terminator at the end of the data
 
-  btSerial.print(data); // Transmit data via Bluetooth
+  Serial1.print(data); // Transmit data via Bluetooth
 
   delay(samplingRate); // Transmit every samplingRate milliseconds
 }
 
+
 void checkBluetoothCommand() {
-  if (btSerial.available()) {
-    char command = btSerial.read();
+  if (Serial1.available()) {
+    char command = Serial1.read();
+    Serial.print("Received command: ");
+    Serial.println(command);
     switch (command) {
       case 'A':
+        HC12.write("A");
         armSystem();
         break;
       case 'D':
+        HC12.write("D");
         disarmSystem();
         break;
       case 'S':
@@ -78,11 +90,12 @@ void disarmSystem() {
   lcd.print("System is disarmed");
 }
 
+
 void setSamplingRate() {
   // Read the next characters for the sampling rate
   String rateStr = "";
-  while (btSerial.available()) {
-    char c = btSerial.read();
+  while (Serial1.available()) {
+    char c = Serial1.read();
     if (isDigit(c)) {
       rateStr += c;
     } else {

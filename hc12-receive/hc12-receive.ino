@@ -1,17 +1,18 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial HC05(10, 11);  // RX, TX pins for HC-05 communication
+SoftwareSerial HC12(10, 11); // HC-12 TX Pin, HC-12 RX Pin
 
 void setup() {
-  Serial.begin(9600);
-  HC05.begin(38400);  // AT mode baud rate is 38400
-  delay(1000);
-
-  HC05.println("AT+ADDR?");  // Get the Bluetooth address
+  Serial.begin(9600);             // Serial port to computer
+  HC12.begin(9600);               // Serial port to HC12
+  Serial.println("Receiver ready");
 }
 
 void loop() {
-  if (HC05.available()) {
-    Serial.write(HC05.read());
+  while (HC12.available()) {        // If HC-12 has data
+    Serial.write(HC12.read());      // Send the data to Serial monitor
+  }
+  while (Serial.available()) {      // If Serial monitor has data
+    HC12.write(Serial.read());      // Send that data to HC-12
   }
 }
