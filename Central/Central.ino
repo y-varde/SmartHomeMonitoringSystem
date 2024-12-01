@@ -32,6 +32,7 @@ void loop() {
   if (HC12.available()) {
     String hc12Data = HC12.readString();
     Serial.println("HC-12 Data: " + hc12Data);
+    displayPeripheralMessage(hc12Data);
   }
 
   checkBluetoothCommand();
@@ -120,6 +121,13 @@ void setSamplingRate() {
     lcd.setCursor(0, 3);
     lcd.print("Invalid sampling rate");
   }
+}
+
+void displayPeripheralMessage(String message) {
+  lcd.setCursor(0, 3); // Set cursor to the fourth row
+  lcd.print("                    "); // Clear the line
+  lcd.setCursor(0, 3);
+  lcd.print(message);
 }
 
 String readTemperature() {

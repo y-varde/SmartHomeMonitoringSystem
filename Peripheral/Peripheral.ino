@@ -121,8 +121,8 @@ void checkMovement() {
 
   // Check for significant movement
   if (armed && (deltaX > movementThreshold || deltaY > movementThreshold || deltaZ > movementThreshold)) {
-    Serial.println("Object has been opened or moved!");
-    HC12.println("Object has been opened or moved!");
+    Serial.println("Door has been opened!!");
+    HC12.println("Door has been opened!!");
 
     // Turn the LED on solid for 10 seconds
     digitalWrite(LED_PIN, HIGH);
