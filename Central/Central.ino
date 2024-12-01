@@ -16,6 +16,7 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 bool isArmed = false;
 int samplingRate = 1000; // Default sampling rate in milliseconds
+String peripheralWarning = ""; // Store warning message from peripheral
 
 void setup() {
   Serial.begin(9600);
@@ -30,9 +31,9 @@ void setup() {
 
 void loop() {
   if (HC12.available()) {
-    String hc12Data = HC12.readString();
-    Serial.println("HC-12 Data: " + hc12Data);
-    displayPeripheralMessage(hc12Data);
+    peripheralWarning = HC12.readString();
+    Serial.println("HC-12 Data: " + peripheralWarning);
+    displayPeripheralMessage(peripheralWarning);
   }
 
   checkBluetoothCommand();
@@ -42,6 +43,11 @@ void loop() {
   data += readTemperature();
   data += readGasConcentration();
   data += readHumidity();
+
+  if (peripheralWarning.length() > 0) {
+    data += "Warning: " + peripheralWarning + "\n";
+    peripheralWarning = ""; // Clear the warning after sending
+  }
 
   data += '\0'; // Add null terminator at the end of the data
 
