@@ -29,9 +29,8 @@ void setup() {
 }
 
 void loop() {
-  if (HC12.available())
-  {
-    String hc12Data = HC12.readString(); 
+  if (HC12.available()) {
+    String hc12Data = HC12.readString();
     Serial.println("HC-12 Data: " + hc12Data);
   }
 
@@ -42,14 +41,13 @@ void loop() {
   data += readTemperature();
   data += readGasConcentration();
   data += readHumidity();
-  
+
   data += '\0'; // Add null terminator at the end of the data
 
   Serial1.print(data); // Transmit data via Bluetooth
 
   delay(samplingRate); // Transmit every samplingRate milliseconds
 }
-
 
 void checkBluetoothCommand() {
   if (Serial1.available()) {
@@ -90,7 +88,6 @@ void disarmSystem() {
   lcd.print("System is disarmed");
 }
 
-
 void setSamplingRate() {
   // Read the next characters for the sampling rate
   String rateStr = "";
@@ -113,6 +110,9 @@ void setSamplingRate() {
     lcd.print("Sampling rate: ");
     lcd.print(samplingRate / 1000);
     lcd.print(" sec");
+
+    // Send the new sampling rate to the peripheral
+    HC12.print("S" + rateStr + "\n");
   } else {
     Serial.println("Invalid sampling rate");
     lcd.setCursor(0, 3);
@@ -128,7 +128,7 @@ String readTemperature() {
   tempData += String((int)temp);
   tempData += " C\n";
 
-  if(temp > 43 || temp < 0) {
+  if (temp > 43 || temp < 0) {
     tempData += "Critical Temp!\n";
     playBuzzer();
   } else {
@@ -150,7 +150,7 @@ String readGasConcentration() {
   gasData += String((int)gas);
   gasData += " ppm\n";
 
-  if(gas > 400) {
+  if (gas > 400) {
     gasData += "Critical Gas!\n";
     playBuzzer();
   } else {

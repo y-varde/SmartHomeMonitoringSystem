@@ -23,6 +23,8 @@ bool ledSolid = false;
 unsigned long previousMillis = 0; // Store the last time the LED was updated
 const long interval = 1000; // Interval at which to blink (milliseconds)
 unsigned long solidStartMillis = 0; // Store the start time of the solid LED state
+unsigned long samplingRate = 1000; // Default sampling rate in milliseconds
+unsigned long lastSampleTime = 0; // Store the last time the sensor was sampled
 
 void setup() {
   // Start serial communication
@@ -51,26 +53,31 @@ void setup() {
 void loop() {
   handleCommands();
   blinkLED();
-  readAccelerometerData();
-  checkMovement();
+  if (millis() - lastSampleTime >= samplingRate) {
+    lastSampleTime = millis();
+    readAccelerometerData();
+    checkMovement();
+  }
   delay(100); // Small delay for loop stability
 }
 
 void handleCommands() {
   if (HC12.available()) {
-    char command = HC12.read();
+    String command = HC12.readStringUntil('\n');
     Serial.print("Received command: ");
     Serial.println(command);
 
-    if (command == 'A') {
+    if (command.startsWith("A")) {
       armed = true;
       ledBlinking = true;
       ledSolid = false; // Ensure LED is not solid
-    } else if (command == 'D') {
+    } else if (command.startsWith("D")) {
       armed = false;
       ledBlinking = false;
       ledSolid = false;
       digitalWrite(LED_PIN, LOW); // Turn off LED
+    } else if (command.startsWith("S")) {
+      setSamplingRate(command.substring(1));
     }
   }
 }
@@ -132,5 +139,17 @@ void checkMovement() {
   if (ledSolid && (millis() - solidStartMillis >= 10000)) {
     ledSolid = false;
     digitalWrite(LED_PIN, LOW); // Turn off LED after 10 seconds
+  }
+}
+
+void setSamplingRate(String rateStr) {
+  int rate = rateStr.toInt();
+  if (rate > 0) {
+    samplingRate = rate * 1000; // Convert to milliseconds
+    Serial.print("Sampling rate set to ");
+    Serial.print(samplingRate / 1000);
+    Serial.println(" seconds");
+  } else {
+    Serial.println("Invalid sampling rate");
   }
 }
