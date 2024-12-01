@@ -5,7 +5,7 @@
 
 // Create sensor object
 Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
-SoftwareSerial HC12(10,11);
+SoftwareSerial HC12(10, 11);
 
 // Define LED pin
 #define LED_PIN 13
@@ -15,6 +15,14 @@ const float movementThreshold = 1.0; // Adjust as needed
 
 // Variables to store initial position
 float initialX, initialY, initialZ;
+
+// Variables for arming device and LED control
+bool armed = false;
+bool ledBlinking = false;
+bool ledSolid = false;
+unsigned long previousMillis = 0; // Store the last time the LED was updated
+const long interval = 1000; // Interval at which to blink (milliseconds)
+unsigned long solidStartMillis = 0; // Store the start time of the solid LED state
 
 void setup() {
   // Start serial communication
@@ -41,14 +49,48 @@ void setup() {
 }
 
 void loop() {
-  // Read accelerometer data
-  HC12.listen();
-  while (HC12.available()) {        // If HC-12 has data
-    Serial.write(HC12.read());      // Send the data to Serial monitor
+  handleCommands();
+  blinkLED();
+  readAccelerometerData();
+  checkMovement();
+  delay(100); // Small delay for loop stability
+}
+
+void handleCommands() {
+  if (HC12.available()) {
+    char command = HC12.read();
+    Serial.print("Received command: ");
+    Serial.println(command);
+
+    if (command == 'A') {
+      armed = true;
+      ledBlinking = true;
+      ledSolid = false; // Ensure LED is not solid
+    } else if (command == 'D') {
+      armed = false;
+      ledBlinking = false;
+      ledSolid = false;
+      digitalWrite(LED_PIN, LOW); // Turn off LED
+    }
   }
-  while (Serial.available()) {      // If Serial monitor has data
-    HC12.write(Serial.read());      // Send that data to HC-12
+}
+
+void blinkLED() {
+  if (ledBlinking && !ledSolid) {
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis;
+      // If the LED is off, turn it on, and vice-versa
+      if (digitalRead(LED_PIN) == LOW) {
+        digitalWrite(LED_PIN, HIGH);
+      } else {
+        digitalWrite(LED_PIN, LOW);
+      }
+    }
   }
+}
+
+void readAccelerometerData() {
   sensors_event_t event;
   accel.getEvent(&event);
 
@@ -59,12 +101,11 @@ void loop() {
   Serial.print("Y ");
   Serial.print(event.acceleration.z);
   Serial.println("Z ");
+}
 
-  // Blink the LED
-  digitalWrite(LED_PIN, HIGH);
-  delay(500);
-  digitalWrite(LED_PIN, LOW);
-  delay(500);
+void checkMovement() {
+  sensors_event_t event;
+  accel.getEvent(&event);
 
   // Calculate the change in position
   float deltaX = abs(event.acceleration.x - initialX);
@@ -72,22 +113,24 @@ void loop() {
   float deltaZ = abs(event.acceleration.z - initialZ);
 
   // Check for significant movement
-  if (deltaX > movementThreshold || deltaY > movementThreshold || deltaZ > movementThreshold) {
+  if (armed && (deltaX > movementThreshold || deltaY > movementThreshold || deltaZ > movementThreshold)) {
     Serial.println("Object has been opened or moved!");
     HC12.println("Object has been opened or moved!");
 
     // Turn the LED on solid for 10 seconds
     digitalWrite(LED_PIN, HIGH);
-    delay(10000);
+    ledSolid = true;
+    solidStartMillis = millis();
 
     // Update initial position after detection
     initialX = event.acceleration.x;
     initialY = event.acceleration.y;
     initialZ = event.acceleration.z;
-
-    // Small delay before next reading
-    delay(500);
   }
 
-  delay(1000); // Small delay for loop stability
+  // Check if the solid LED state should end
+  if (ledSolid && (millis() - solidStartMillis >= 10000)) {
+    ledSolid = false;
+    digitalWrite(LED_PIN, LOW); // Turn off LED after 10 seconds
+  }
 }
