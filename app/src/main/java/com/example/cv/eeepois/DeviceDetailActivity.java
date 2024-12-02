@@ -52,6 +52,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private Button btnArmSystem;
     private Button btnUpdateSamplingRate;
     private Button btnRefresh;
+    private Button btnFetchReadings;
     private SeekBar seekBarSamplingRate;
     private Spinner modeSpinner;
     private EditText edtTempMinThreshold;
@@ -89,6 +90,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         btnArmSystem = findViewById(R.id.btnArmSystem);
         btnUpdateSamplingRate = findViewById(R.id.btnUpdateSamplingRate);
         btnRefresh = findViewById(R.id.btnRefresh);
+        btnFetchReadings = findViewById(R.id.btnFetchReadings);
         seekBarSamplingRate = findViewById(R.id.seekBarSamplingRate);
         modeSpinner = findViewById(R.id.mode_spinner);
         edtTempMinThreshold = findViewById(R.id.edtTempMinThreshold);
@@ -128,6 +130,13 @@ public class DeviceDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 refreshActivity();
+            }
+        });
+
+        btnFetchReadings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessageToDevice("F");
             }
         });
 

@@ -59,22 +59,36 @@ void loop() {
 void checkBluetoothCommand() {
   if (Serial1.available()) {
     char command = Serial1.read();
-    Serial.print("Received command: ");
+    Serial.print("BLE Command: ");
     Serial.println(command);
     switch (command) {
       case 'A':
-        HC12.write("A");
         armSystem();
         break;
       case 'D':
-        HC12.write("D");
         disarmSystem();
         break;
       case 'S':
         setSamplingRate();
         break;
+      case 'F': // New command to fetch sensor readings
+        fetchSensorReadings();
+        break;
     }
   }
+}
+
+void fetchSensorReadings() {
+  String data = "";
+
+  data += readTemperature();
+  data += readGasConcentration();
+  data += readHumidity();
+  
+  data += '\0'; // Add null terminator at the end of the data
+
+  Serial1.print(data); // Transmit data via Bluetooth Low Energy
+  delay(100); // Add delay after Bluetooth transmission
 }
 
 void armSystem() {
