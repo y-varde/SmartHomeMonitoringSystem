@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,6 +50,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private TextView txtGasConcentration;
     private TextView txtSamplingRate;
     private TextView txtDeviceMessage;
+    private TextView txtPeripheralWarning;
     private Button btnToggleTempUnit;
     private Button btnArmSystem;
     private Button btnUpdateSamplingRate;
@@ -89,6 +91,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         txtGasConcentration = findViewById(R.id.txtGasConcentration);
         txtSamplingRate = findViewById(R.id.txtSamplingRate);
         txtDeviceMessage = findViewById(R.id.txtDeviceMessage);
+        txtPeripheralWarning = findViewById(R.id.txtPeripheralWarning);
         btnToggleTempUnit = findViewById(R.id.btnToggleTempUnit);
         btnArmSystem = findViewById(R.id.btnArmSystem);
         btnUpdateSamplingRate = findViewById(R.id.btnUpdateSamplingRate);
@@ -385,6 +388,20 @@ public class DeviceDetailActivity extends AppCompatActivity {
             otherLines.append(lines[i]).append("\n");
         }
         txtDeviceMessage.setText(otherLines.toString().trim());
+    
+        // Check for peripheral warning and display it in bold red text
+        if (message.contains("Warning: ")) {
+            String warningMessage = message.substring(message.indexOf("Warning: "));
+            txtPeripheralWarning.setText(Html.fromHtml("<b><font color='red'>" + warningMessage + "</font></b>"));
+            txtPeripheralWarning.setVisibility(View.VISIBLE);
+        } else {
+            txtPeripheralWarning.setVisibility(View.GONE);
+        }
+    
+        // Check for confirmation message
+        if (message.contains("Readings Updated")) {
+            showToast("Latest sensor readings retrieved");
+        }
     }
 
     private void checkThreshold(TextView textView, String value, int minThreshold, int maxThreshold) {
