@@ -20,6 +20,8 @@ bool isArmed = false;
 bool fetchSensorReadingsFlag = false;
 int samplingRate = 1000; // Default sampling rate in milliseconds
 String peripheralWarning = ""; // Store warning message from peripheral
+int phoneCommandCount = 0; // Counter for commands from phone app
+int peripheralCommandCount = 0; // Counter for commands to peripheral device
 
 void setup() {
   initializeSerial();
@@ -57,7 +59,9 @@ void handlePeripheralWarning() {
   if (HC12.available()) {
     peripheralWarning = HC12.readString();
     Serial.println("HC-12 Data: " + peripheralWarning);
-    //displayPeripheralMessage(peripheralWarning);
+    displayPeripheralMessage(peripheralWarning);
+    peripheralCommandCount++;
+    updatePeripheralCommandCount();
   }
 }
 
@@ -66,6 +70,8 @@ void checkBluetoothCommand() {
     char command = Serial1.read();
     Serial.print("BLE Command: ");
     Serial.println(command);
+    phoneCommandCount++;
+    updatePhoneCommandCount();
     switch (command) {
       case 'A':
         armSystem();
@@ -97,110 +103,96 @@ void transmitSensorDataWithCheck() {
     delay(100); // Delay for 100 milliseconds
     if (Serial1.available()) {
       char command = Serial1.read();
-      if (command == 'F') {
-        fetchSensorReadings();
-        return; // Exit the function after sending the fetched readings
+      Serial.print("BLE Command: ");
+      Serial.println(command);
+      phoneCommandCount++;
+      updatePhoneCommandCount();
+      switch (command) {
+        case 'A':
+          armSystem();
+          break;
+        case 'D':
+          disarmSystem();
+          break;
+        case 'S':
+          setSamplingRate();
+          return;
+        case 'F': // New command to fetch sensor readings
+          fetchSensorReadings();
+          return; // Exit the function after sending the fetched readings
       }
     }
   }
 
-  transmitSensorData(); // Transmit data after the full delay
+  fetchSensorReadings(); // Fetch sensor readings after the delay
 }
 
 void transmitSensorData() {
-  String data = "";
-
-  data += readTemperature();
-  data += readGasConcentration();
-  data += readHumidity();
+  String data = readTemperature() + readGasConcentration() + readHumidity();
 
   if (peripheralWarning.length() > 0) {
     data += "Warning: " + peripheralWarning + "\n";
     peripheralWarning = ""; // Clear the warning after sending
   }
 
-  data += '\0'; // Add null terminator at the end of the data
-
   Serial1.print(data); // Transmit data via Bluetooth
 }
 
 // Helper Functions
 void fetchSensorReadings() {
-  String data = "";
-
-  data += readTemperature();
-  data += readGasConcentration();
-  data += readHumidity();
-  
-  data += '\0'; // Add null terminator at the end of the data
-
+  String data = readTemperature() + readGasConcentration() + readHumidity();
   Serial1.print(data); // Transmit data via Bluetooth Low Energy
   delay(100); // Add delay after Bluetooth transmission
 }
 
 String readTemperature() {
-  String tempData = "Temperature: ";
   float temp = getTemp();
-  tempData += String((int)temp);
-  tempData += " C\n";
-
-  if(temp > 43 || temp < 0) {
-    tempData += "Critical Temp!\n";
-    playBuzzer();
-  } else {
-    stopBuzzer();
-  }
-
-  Serial.print(tempData);
-  lcd.setCursor(0, 0);
-  lcd.print("                    "); // Clear the line
-  lcd.setCursor(0, 0);
-  lcd.print("Temp: ");
-  lcd.print((int)temp);
-  lcd.print(" C");
-
+  String tempData = "Temperature: " + String((int)temp) + " C\n";
+  updateLCDLine(0, "Temp: " + String((int)temp) + " C");
+  checkCritical(temp, 43, 0);
   return tempData;
 }
 
 String readGasConcentration() {
-  String gasData = "Concentration: ";
   float gas = getGas();
-  gasData += String((int)gas);
-  gasData += " ppm\n";
-
-  if(gas > 400) {
-    gasData += "Critical Gas!\n";
-    playBuzzer();
-  } else {
-    stopBuzzer();
-  }
-
-  Serial.print(gasData);
-  lcd.setCursor(0, 1);
-  lcd.print("                    "); // Clear the line
-  lcd.setCursor(0, 1);
-  lcd.print("Gas: ");
-  lcd.print((int)gas);
-  lcd.print(" ppm");
-
+  String gasData = "Concentration: " + String((int)gas) + " ppm\n";
+  updateLCDLine(1, "Gas: " + String((int)gas) + " ppm");
+  checkCritical(gas, 400, 0);
   return gasData;
 }
 
 String readHumidity() {
-  String humidityData = "Humidity: ";
   float humidity = getHumidity();
-  humidityData += String((int)humidity);
-  humidityData += "%\n";
-
-  Serial.print(humidityData);
-  lcd.setCursor(0, 2);
-  lcd.print("                    "); // Clear the line
-  lcd.setCursor(0, 2);
-  lcd.print("Humidity: ");
-  lcd.print((int)humidity);
-  lcd.print("%");
-
+  String humidityData = "Humidity: " + String((int)humidity) + "%\n";
+  updateLCDLine(2, "Humidity: " + String((int)humidity) + "%");
   return humidityData;
+}
+
+void updateLCDLine(int line, String message) {
+  lcd.setCursor(0, line);
+  lcd.print("                    "); // Clear the line
+  lcd.setCursor(0, line);
+  lcd.print(message);
+}
+
+void updatePhoneCommandCount() {
+  updateLCDLine(1, "Phone Cmds: " + String(phoneCommandCount));
+}
+
+void updatePeripheralCommandCount() {
+  updateLCDLine(2, "Peripheral Cmds: " + String(peripheralCommandCount));
+}
+
+void displayPeripheralMessage(String message) {
+  updateLCDLine(3, message);
+}
+
+void checkCritical(float value, float upperLimit, float lowerLimit) {
+  if (value > upperLimit || value < lowerLimit) {
+    playBuzzer();
+  } else {
+    stopBuzzer();
+  }
 }
 
 void playBuzzer() {
@@ -231,19 +223,15 @@ float getVoltage(int pin) {
 void armSystem() {
   isArmed = true;
   Serial.println("System is armed");
-  lcd.setCursor(0, 3);
-  lcd.print("                    "); // Clear the line
-  lcd.setCursor(0, 3);
-  lcd.print("System is armed");
+  updateLCDLine(3, "System is armed");
+  HC12.println("A"); // Send arm command to peripheral
 }
 
 void disarmSystem() {
   isArmed = false;
   Serial.println("System is disarmed");
-  lcd.setCursor(0, 3);
-  lcd.print("                    "); // Clear the line
-  lcd.setCursor(0, 3);
-  lcd.print("System is disarmed");
+  updateLCDLine(3, "System is disarmed");
+  HC12.println("D"); // Send disarm command to peripheral
 }
 
 void setSamplingRate() {
@@ -262,17 +250,9 @@ void setSamplingRate() {
     Serial.print("Sampling rate set to ");
     Serial.print(samplingRate / 1000);
     Serial.println(" seconds");
-    lcd.setCursor(0, 3);
-    lcd.print("                    "); // Clear the line
-    lcd.setCursor(0, 3);
-    lcd.print("Sampling rate: ");
-    lcd.print(samplingRate / 1000);
-    lcd.print(" sec");
+    updateLCDLine(3, "Sampling rate: " + String(samplingRate / 1000) + " sec");
   } else {
     Serial.println("Invalid sampling rate");
-    lcd.setCursor(0, 3);
-    lcd.print("                    "); // Clear the line
-    lcd.setCursor(0, 3);
-    lcd.print("Invalid sampling rate");
+    updateLCDLine(3, "Invalid sampling rate");
   }
 }
