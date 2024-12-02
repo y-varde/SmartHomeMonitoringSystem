@@ -73,16 +73,24 @@ void handleCommands() {
       armed = true;
       ledBlinking = true;
       ledSolid = false; // Ensure LED is not solid
-    } else if (command.startsWith("D")) {
+    } 
+    else if (command.startsWith("D")) {
       armed = false;
       ledBlinking = false;
       ledSolid = false;
       digitalWrite(LED_PIN, LOW); // Turn off LED
-    } else if (command.startsWith("S")) {
+    } 
+    else if (command.startsWith("S")) {
       setSamplingRate(command.substring(1));
     }
     else if (command.startsWith("R")) {
       commandCount = 0;
+    }
+    else if (command.startsWith("ON")) {
+      turnOnLED();
+    }
+    else if (command.startsWith("OFF")) {
+      turnOffLED();
     }
     sendCommandCount();
   }
@@ -169,4 +177,14 @@ void clearBluetoothBuffer() {
   while (HC12.available()) {
     HC12.read();
   }
+}
+
+void turnOnLED() {
+  digitalWrite(LED_PIN, HIGH);
+  Serial.println("LED turned on");
+}
+
+void turnOffLED() {
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("LED turned off");
 }

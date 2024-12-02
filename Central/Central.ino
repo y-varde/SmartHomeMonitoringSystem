@@ -93,25 +93,47 @@ void checkBluetoothCommand() {
     char command = Serial1.read();
     Serial.print("BLE Command: ");
     Serial.println(command);
-    phoneCommandCount++;
-    updateCommandCount();
+    
+    
     switch (command) {
       case 'A':
+        phoneCommandCount++;
         armSystem();
         break;
       case 'D':
+        phoneCommandCount++;
         disarmSystem();
         break;
       case 'S':
+        phoneCommandCount++;
         setSamplingRate();
         break;
       case 'F': // New command to fetch sensor readings
+        phoneCommandCount++;
         fetchSensorReadings();
         break;
       case 'R': // Refresh command
         resetCommandCounts();
         break;
+      case 'L': // Turn on LED
+        handleLEDCommand();
+        break;
     }
+    updateCommandCount();
+  }
+}
+
+void handleLEDCommand() {
+  String command = Serial1.readStringUntil('\n');
+  Serial.print("Forwarding LED Command: ");
+  Serial.println(command);
+  HC12.println(command); // Forward the command to the peripheral
+
+  if (command.startsWith("ON")) {
+    updateLCDLine(2, "LED turned on");
+  } 
+  else if (command.startsWith("OFF")) {
+    updateLCDLine(2, "LED turned off");
   }
 }
 
@@ -121,6 +143,7 @@ void resetCommandCounts() {
   HC12.println("R"); // Send refresh command to peripheral
   updateCommandCount();
   Serial.println("Command counts reset");
+  updateLCDLine(3, "Command counts reset");
 }
 
 // Helper Functions

@@ -23,15 +23,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Switch;
 
 import java.util.UUID;
 
 import android.util.Log;
+
 
 public class DeviceDetailActivity extends AppCompatActivity {
 
@@ -67,6 +70,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private EditText edtGasMinThreshold;
     private EditText edtGasMaxThreshold;
     private AlertDialog warningDialog;
+    private Switch switchLED;
 
     private static final UUID SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
@@ -108,6 +112,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         edtHumidityThreshold = findViewById(R.id.edtHumidityThreshold);
         edtGasMinThreshold = findViewById(R.id.edtGasMinThreshold);
         edtGasMaxThreshold = findViewById(R.id.edtGasMaxThreshold);
+        switchLED = findViewById(R.id.switchLED);
 
         String deviceName = getIntent().getStringExtra("deviceName");
         String deviceAddress = getIntent().getStringExtra("deviceAddress");
@@ -115,6 +120,17 @@ public class DeviceDetailActivity extends AppCompatActivity {
         txtDeviceName.setText(deviceName);
         txtDeviceAddress.setText(deviceAddress);
         txtSamplingRate.setText("Sampling Rate: " + samplingRate + "s");
+
+        switchLED.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    sendMessageToDevice("LON");
+                } else {
+                    sendMessageToDevice("LOFF");
+                }
+            }
+        });
 
         btnToggleTempUnit.setOnClickListener(new View.OnClickListener() {
             @Override
