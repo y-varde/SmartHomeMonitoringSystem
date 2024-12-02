@@ -70,7 +70,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private boolean showInFahrenheit = false;
     private boolean isArmed = false;
     private boolean fetchCommandSent = false;
-    private int samplingRate = 1; // Default sampling rate in seconds
+    private int samplingRate = 10; // Default sampling rate in seconds
     private int tempMinThreshold = 0; // Default minimum temperature threshold
     private int tempMaxThreshold = 43; // Default maximum temperature threshold
     private int humidityThreshold = 70; // Default humidity threshold
@@ -108,6 +108,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
         txtDeviceName.setText(deviceName);
         txtDeviceAddress.setText(deviceAddress);
+        txtSamplingRate.setText("Sampling Rate: " + samplingRate + "s");
 
         btnToggleTempUnit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,6 +152,8 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         });
 
+
+        seekBarSamplingRate.setMax(19);
         seekBarSamplingRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

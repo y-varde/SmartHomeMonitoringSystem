@@ -77,8 +77,9 @@
             android:id="@+id/seekBarSamplingRate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:visibility="gone"/>
+            android:max="19"
+            android:progress="9"
+            android:layout_marginTop="8dp"/>
 
         <Button
             android:id="@+id/btnUpdateSamplingRate"
