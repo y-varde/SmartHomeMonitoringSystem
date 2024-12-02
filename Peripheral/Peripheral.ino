@@ -69,8 +69,6 @@ void handleCommands() {
     Serial.print("Received command: ");
     Serial.println(command);
     commandCount++;
-    sendCommandCount();
-
     if (command.startsWith("A")) {
       armed = true;
       ledBlinking = true;
@@ -83,6 +81,10 @@ void handleCommands() {
     } else if (command.startsWith("S")) {
       setSamplingRate(command.substring(1));
     }
+    else if (command.startsWith("R")) {
+      commandCount = 0;
+    }
+    sendCommandCount();
   }
 }
 

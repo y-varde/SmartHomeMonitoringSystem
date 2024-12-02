@@ -141,6 +141,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 refreshActivity();
+                sendMessageToDevice("R");
             }
         });
 

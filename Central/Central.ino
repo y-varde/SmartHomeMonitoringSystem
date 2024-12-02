@@ -108,8 +108,19 @@ void checkBluetoothCommand() {
       case 'F': // New command to fetch sensor readings
         fetchSensorReadings();
         break;
+      case 'R': // Refresh command
+        resetCommandCounts();
+        break;
     }
   }
+}
+
+void resetCommandCounts() {
+  phoneCommandCount = 0;
+  peripheralCommandCount = 0;
+  HC12.println("R"); // Send refresh command to peripheral
+  updateCommandCount();
+  Serial.println("Command counts reset");
 }
 
 // Helper Functions
