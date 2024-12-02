@@ -7,7 +7,6 @@
 const int gasPin = A3;
 const int tempPin = A1;
 const int buzzerPin = 8;
-const int interruptPin = 2;
 
 // Bluetooth Serial Communication
 SoftwareSerial HC12(10, 11); // RX, TX
@@ -18,7 +17,7 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 // Sensor and System State
 DHT11 dht11(2);
 bool isArmed = false;
-volatile bool fetchSensorReadingsFlag = false;
+bool fetchSensorReadingsFlag = false;
 int samplingRate = 1000; // Default sampling rate in milliseconds
 String peripheralWarning = ""; // Store warning message from peripheral
 
@@ -26,7 +25,6 @@ void setup() {
   initializeSerial();
   initializePins();
   initializeLCD();
-  initializeInterrupts();
   Serial.println("Central ready");
 }
 
@@ -34,8 +32,7 @@ void loop() {
   handlePeripheralWarning();
   checkBluetoothCommand();
   handleFetchSensorReadings();
-  transmitSensorData();
-  delay(samplingRate); // Transmit every samplingRate milliseconds
+  transmitSensorDataWithCheck();
 }
 
 // Setup Functions
@@ -46,7 +43,7 @@ void initializeSerial() {
 }
 
 void initializePins() {
-  pinMode(interruptPin, INPUT_PULLUP);
+  pinMode(buzzerPin, OUTPUT);
 }
 
 void initializeLCD() {
@@ -55,16 +52,12 @@ void initializeLCD() {
   lcd.backlight(); // Turn on the backlight
 }
 
-void initializeInterrupts() {
-  attachInterrupt(digitalPinToInterrupt(interruptPin), fetchSensorReadingsISR, FALLING);
-}
-
 // Loop Functions
 void handlePeripheralWarning() {
   if (HC12.available()) {
     peripheralWarning = HC12.readString();
     Serial.println("HC-12 Data: " + peripheralWarning);
-    displayPeripheralMessage(peripheralWarning);
+    //displayPeripheralMessage(peripheralWarning);
   }
 }
 
@@ -97,6 +90,23 @@ void handleFetchSensorReadings() {
   }
 }
 
+void transmitSensorDataWithCheck() {
+  int delayCount = samplingRate / 100; // Number of 100ms intervals in the sampling rate
+
+  for (int i = 0; i < delayCount; i++) {
+    delay(100); // Delay for 100 milliseconds
+    if (Serial1.available()) {
+      char command = Serial1.read();
+      if (command == 'F') {
+        fetchSensorReadings();
+        return; // Exit the function after sending the fetched readings
+      }
+    }
+  }
+
+  transmitSensorData(); // Transmit data after the full delay
+}
+
 void transmitSensorData() {
   String data = "";
 
@@ -115,10 +125,6 @@ void transmitSensorData() {
 }
 
 // Helper Functions
-void fetchSensorReadingsISR() {
-  fetchSensorReadingsFlag = true;
-}
-
 void fetchSensorReadings() {
   String data = "";
 
@@ -269,11 +275,4 @@ void setSamplingRate() {
     lcd.setCursor(0, 3);
     lcd.print("Invalid sampling rate");
   }
-}
-
-void displayPeripheralMessage(String message) {
-  lcd.setCursor(0, 3);
-  lcd.print("                    "); // Clear the line
-  lcd.setCursor(0, 3);
-  lcd.print(message);
 }
