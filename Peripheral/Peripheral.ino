@@ -25,6 +25,7 @@ const long interval = 1000; // Interval at which to blink (milliseconds)
 unsigned long solidStartMillis = 0; // Store the start time of the solid LED state
 unsigned long samplingRate = 1000; // Default sampling rate in milliseconds
 unsigned long lastSampleTime = 0; // Store the last time the sensor was sampled
+int commandCount = 0; // Counter for commands received by the peripheral device
 
 void setup() {
   // Start serial communication
@@ -66,6 +67,8 @@ void handleCommands() {
     String command = HC12.readStringUntil('\n');
     Serial.print("Received command: ");
     Serial.println(command);
+    commandCount++;
+    sendCommandCount();
 
     if (command.startsWith("A")) {
       armed = true;
@@ -152,4 +155,9 @@ void setSamplingRate(String rateStr) {
   } else {
     Serial.println("Invalid sampling rate");
   }
+}
+
+void sendCommandCount() {
+  HC12.print("CmdCount: ");
+  HC12.println(commandCount);
 }
