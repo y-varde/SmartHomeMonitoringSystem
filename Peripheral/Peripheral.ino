@@ -48,6 +48,7 @@ void setup() {
   initialX = event.acceleration.x;
   initialY = event.acceleration.y;
   initialZ = event.acceleration.z;
+  clearBluetoothBuffer();
   Serial.println("Peripheral Ready");
 }
 
@@ -160,4 +161,10 @@ void setSamplingRate(String rateStr) {
 void sendCommandCount() {
   HC12.print("CmdCount: ");
   HC12.println(commandCount);
+}
+
+void clearBluetoothBuffer() {
+  while (HC12.available()) {
+    HC12.read();
+  }
 }

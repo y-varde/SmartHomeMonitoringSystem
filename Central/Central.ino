@@ -47,6 +47,7 @@ void setup() {
   initializePins();
   initializeLCD();
   delayCount = samplingRate / 100;
+  clearBluetoothBuffer();
   Serial.println("Central ready");
 }
 
@@ -64,6 +65,12 @@ void loop() {
   handlePeripheralWarning();
 
   delay(100); // Delay for 100 milliseconds
+}
+
+void clearBluetoothBuffer() {
+  while (Serial1.available()) {
+    Serial1.read();
+  }
 }
 
 // Loop Functions
