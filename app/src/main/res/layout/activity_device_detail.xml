@@ -1,216 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DeviceDetailActivity">
 
-    <TextView
-        android:id="@+id/txtDeviceName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Device Name"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/txtDeviceAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device Address"
-        app:layout_constraintTop_toBottomOf="@id/txtDeviceName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/txtDeviceName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="8dp"/>
 
-    <TextView
-        android:id="@+id/txtTemperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Temperature: -- C"
-        app:layout_constraintTop_toBottomOf="@id/txtDeviceAddress"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
+        <TextView
+            android:id="@+id/txtDeviceAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device Address"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnToggleTempUnit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show in Fahrenheit"
-        app:layout_constraintTop_toTopOf="@id/txtTemperature"
-        app:layout_constraintBottom_toBottomOf="@id/txtTemperature"
-        app:layout_constraintStart_toEndOf="@id/txtTemperature"
-        android:layout_marginStart="8dp" />
+        <Spinner
+            android:id="@+id/mode_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/edtTempMinThreshold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Min Temp"
-        android:inputType="number"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/txtTemperature"
-        app:layout_constraintBottom_toBottomOf="@id/txtTemperature"
-        app:layout_constraintStart_toEndOf="@id/btnToggleTempUnit"
-        android:layout_marginStart="8dp" />
+        <TextView
+            android:id="@+id/txtTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Temperature: --"
+            android:paddingBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edtTempMaxThreshold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Max Temp"
-        android:inputType="number"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/txtTemperature"
-        app:layout_constraintBottom_toBottomOf="@id/txtTemperature"
-        app:layout_constraintStart_toEndOf="@id/edtTempMinThreshold"
-        android:layout_marginStart="8dp" />
+        <Button
+            android:id="@+id/btnToggleTempUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show in Fahrenheit"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/txtHumidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Humidity: -- %"
-        app:layout_constraintTop_toBottomOf="@id/txtTemperature"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp" />
+        <TextView
+            android:id="@+id/txtHumidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Humidity: --"
+            android:paddingBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edtHumidityThreshold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Humidity %"
-        android:inputType="number"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/txtHumidity"
-        app:layout_constraintBottom_toBottomOf="@id/txtHumidity"
-        app:layout_constraintStart_toEndOf="@id/txtHumidity"
-        android:layout_marginStart="8dp" />
+        <TextView
+            android:id="@+id/txtGasConcentration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gas Concentration: --"
+            android:paddingBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/txtGasConcentration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Concentration: -- ppm"
-        app:layout_constraintTop_toBottomOf="@id/txtHumidity"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp" />
+        <TextView
+            android:id="@+id/txtSamplingRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sampling Rate: --"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-    <EditText
-        android:id="@+id/edtGasMinThreshold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Min Gas"
-        android:inputType="number"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/txtGasConcentration"
-        app:layout_constraintBottom_toBottomOf="@id/txtGasConcentration"
-        app:layout_constraintStart_toEndOf="@id/txtGasConcentration"
-        android:layout_marginStart="8dp" />
+        <SeekBar
+            android:id="@+id/seekBarSamplingRate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:visibility="gone"/>
 
-    <EditText
-        android:id="@+id/edtGasMaxThreshold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Max Gas"
-        android:inputType="number"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/txtGasConcentration"
-        app:layout_constraintBottom_toBottomOf="@id/txtGasConcentration"
-        app:layout_constraintStart_toEndOf="@id/edtGasMinThreshold"
-        android:layout_marginStart="8dp" />
+        <Button
+            android:id="@+id/btnUpdateSamplingRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update Sampling Rate"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"
+            android:visibility="gone"/>
 
-    <Spinner
-        android:id="@+id/mode_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/mode_array"
-        app:layout_constraintTop_toBottomOf="@id/txtGasConcentration"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
+        <EditText
+            android:id="@+id/edtTempMinThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Min Temperature Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/txtSamplingRate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sampling Rate: 1s"
-        app:layout_constraintTop_toBottomOf="@id/mode_spinner"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:visibility="gone" />
+        <EditText
+            android:id="@+id/edtTempMaxThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Max Temperature Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-    <SeekBar
-        android:id="@+id/seekBarSamplingRate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:max="10"
-        android:progress="1"
-        app:layout_constraintTop_toBottomOf="@id/txtSamplingRate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:visibility="gone" />
+        <EditText
+            android:id="@+id/edtHumidityThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Humidity Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/btnUpdateSamplingRate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Update"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/seekBarSamplingRate"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
+        <EditText
+            android:id="@+id/edtGasMinThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Min Gas Concentration Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/btnArmSystem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ARM SYSTEM"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/btnUpdateSamplingRate"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
+        <EditText
+            android:id="@+id/edtGasMaxThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Max Gas Concentration Threshold"
+            android:inputType="number"
+            android:paddingBottom="16dp"
+            android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/btnRefresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Refresh"
-        app:layout_constraintTop_toBottomOf="@id/btnArmSystem"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
+        <Button
+            android:id="@+id/btnArmSystem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ARM SYSTEM"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"
+            android:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/txtDeviceMessage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Device Message"
-        app:layout_constraintTop_toBottomOf="@id/btnRefresh"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        <Button
+            android:id="@+id/btnFetchReadings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fetch Readings"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnFetchReadings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fetch Readings"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center_horizontal"/>
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refresh"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"/>
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/txtDeviceMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device Message"
+            android:paddingBottom="16dp"/>
+    </LinearLayout>
+</ScrollView>

@@ -67,6 +67,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private StringBuilder messageBuilder = new StringBuilder();
     private boolean showInFahrenheit = false;
     private boolean isArmed = false;
+    private boolean fetchCommandSent = false;
     private int samplingRate = 1; // Default sampling rate in seconds
     private int tempMinThreshold = 0; // Default minimum temperature threshold
     private int tempMaxThreshold = 43; // Default maximum temperature threshold
@@ -259,6 +260,11 @@ public class DeviceDetailActivity extends AppCompatActivity {
         bluetoothGatt = device.connectGatt(this, false, gattCallback);
     }
 
+    private void fetchSensorReadings() {
+        sendMessageToDevice("F");
+        fetchCommandSent = true;
+    }
+
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -323,17 +329,21 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private void updateMessage(BluetoothGattCharacteristic characteristic) {
         final String chunk = new String(characteristic.getValue());
         Log.d(TAG, "Characteristic updated: " + chunk);
-
+    
         messageBuilder.append(chunk);
-
+    
         if (chunk.contains("\0")) {
             final String completeMessage = messageBuilder.toString().replace("\0", "").trim();
             messageBuilder.setLength(0);
-
+    
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     displayMessage(completeMessage);
+                    if (fetchCommandSent) {
+                        showToast("Recent sensor readings retrieved");
+                        fetchCommandSent = false; // Reset the flag
+                    }
                 }
             });
         }
@@ -445,6 +455,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtHumidityThreshold.setVisibility(View.VISIBLE);
             edtGasMinThreshold.setVisibility(View.VISIBLE);
             edtGasMaxThreshold.setVisibility(View.VISIBLE);
+            btnFetchReadings.setVisibility(View.VISIBLE);
         } else {
             btnArmSystem.setVisibility(View.GONE);
             txtSamplingRate.setVisibility(View.GONE);
@@ -455,6 +466,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtHumidityThreshold.setVisibility(View.GONE);
             edtGasMinThreshold.setVisibility(View.GONE);
             edtGasMaxThreshold.setVisibility(View.GONE);
+            btnFetchReadings.setVisibility(View.GONE);
         }
     }
 
