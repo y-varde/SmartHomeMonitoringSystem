@@ -69,8 +69,9 @@
             android:id="@+id/txtSamplingRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sampling Rate: 10s"
-            android:paddingBottom="8dp"/>
+            android:text="Sampling Rate: --"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
         <SeekBar
             android:id="@+id/seekBarSamplingRate"
@@ -86,101 +87,53 @@
             android:layout_height="wrap_content"
             android:text="Update Sampling Rate"
             android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:visibility="gone"
-            android:id="@+id/tempThresholdLayout">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Min Temp: "/>
-
-            <EditText
-                android:id="@+id/edtTempMinThreshold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Min Temperature"
-                android:inputType="number"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Max Temp: "
-                android:layout_marginStart="16dp"/>
-
-            <EditText
-                android:id="@+id/edtTempMaxThreshold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Max Temperature"
-                android:inputType="number"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:visibility="gone"
-            android:id="@+id/humidityThresholdLayout">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Humidity: "/>
-
-            <EditText
-                android:id="@+id/edtHumidityThreshold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Humidity Threshold"
-                android:inputType="number"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:paddingBottom="16dp"
-            android:visibility="gone"
-            android:id="@+id/gasThresholdLayout">
+            android:visibility="gone"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Min Gas: "/>
+        <EditText
+            android:id="@+id/edtTempMinThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Min Temperature Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-            <EditText
-                android:id="@+id/edtGasMinThreshold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Min Gas Concentration"
-                android:inputType="number"/>
+        <EditText
+            android:id="@+id/edtTempMaxThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Max Temperature Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Max Gas: "
-                android:layout_marginStart="16dp"/>
+        <EditText
+            android:id="@+id/edtHumidityThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Humidity Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
 
-            <EditText
-                android:id="@+id/edtGasMaxThreshold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Max Gas Concentration"
-                android:inputType="number"/>
-        </LinearLayout>
+        <EditText
+            android:id="@+id/edtGasMinThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Min Gas Concentration Threshold"
+            android:inputType="number"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/edtGasMaxThreshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Max Gas Concentration Threshold"
+            android:inputType="number"
+            android:paddingBottom="16dp"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnArmSystem"

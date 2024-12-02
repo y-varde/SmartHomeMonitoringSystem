@@ -83,6 +83,37 @@ void checkBluetoothCommand() {
   }
 }
 
+void setSamplingRate() {
+  // Read the next characters for the sampling rate
+  String rateStr = "";
+  while (Serial1.available()) {
+    char c = Serial1.read();
+    if (isDigit(c)) {
+      rateStr += c;
+    } else {
+      break;
+    }
+  }
+  if (rateStr.length() > 0) {
+    samplingRate = rateStr.toInt() * 1000; // Convert to milliseconds
+    Serial.print("Sampling rate set to ");
+    Serial.print(samplingRate / 1000);
+    Serial.println(" seconds");
+    lcd.setCursor(0, 3);
+    lcd.print("                    "); // Clear the line
+    lcd.setCursor(0, 3);
+    lcd.print("Sampling rate: ");
+    lcd.print(samplingRate / 1000);
+    lcd.print(" sec");
+  } else {
+    Serial.println("Invalid sampling rate");
+    lcd.setCursor(0, 3);
+    lcd.print("                    "); // Clear the line
+    lcd.setCursor(0, 3);
+    lcd.print("Invalid sampling rate");
+  }
+}
+
 void handleFetchSensorReadings() {
   if (fetchSensorReadingsFlag) {
     fetchSensorReadings();
@@ -244,35 +275,4 @@ void disarmSystem() {
   lcd.print("                    "); // Clear the line
   lcd.setCursor(0, 3);
   lcd.print("System is disarmed");
-}
-
-void setSamplingRate() {
-  // Read the next characters for the sampling rate
-  String rateStr = "";
-  while (Serial1.available()) {
-    char c = Serial1.read();
-    if (isDigit(c)) {
-      rateStr += c;
-    } else {
-      break;
-    }
-  }
-  if (rateStr.length() > 0) {
-    samplingRate = rateStr.toInt() * 1000; // Convert to milliseconds
-    Serial.print("Sampling rate set to ");
-    Serial.print(samplingRate / 1000);
-    Serial.println(" seconds");
-    lcd.setCursor(0, 3);
-    lcd.print("                    "); // Clear the line
-    lcd.setCursor(0, 3);
-    lcd.print("Sampling rate: ");
-    lcd.print(samplingRate / 1000);
-    lcd.print(" sec");
-  } else {
-    Serial.println("Invalid sampling rate");
-    lcd.setCursor(0, 3);
-    lcd.print("                    "); // Clear the line
-    lcd.setCursor(0, 3);
-    lcd.print("Invalid sampling rate");
-  }
 }
