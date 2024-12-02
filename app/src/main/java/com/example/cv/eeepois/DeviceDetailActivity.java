@@ -1,6 +1,7 @@
 package com.example.cv.eeepois;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -8,6 +9,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
@@ -64,6 +66,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private EditText edtHumidityThreshold;
     private EditText edtGasMinThreshold;
     private EditText edtGasMaxThreshold;
+    private AlertDialog warningDialog;
 
     private static final UUID SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
     private static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
@@ -389,18 +392,32 @@ public class DeviceDetailActivity extends AppCompatActivity {
         }
         txtDeviceMessage.setText(otherLines.toString().trim());
     
-        // Check for peripheral warning and display it in bold red text
+        // Check for peripheral warning and display it as an alert dialog
         if (message.contains("Warning: ")) {
             String warningMessage = message.substring(message.indexOf("Warning: "));
-            txtPeripheralWarning.setText(Html.fromHtml("<b><font color='red'>" + warningMessage + "</font></b>"));
-            txtPeripheralWarning.setVisibility(View.VISIBLE);
-        } else {
-            txtPeripheralWarning.setVisibility(View.GONE);
+            showWarningDialog(warningMessage);
         }
     
         // Check for confirmation message
         if (message.contains("Readings Updated")) {
             showToast("Latest sensor readings retrieved");
+        }
+    }
+
+    private void showWarningDialog(String warningMessage) {
+        if (warningDialog == null || !warningDialog.isShowing()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Warning")
+                   .setMessage(Html.fromHtml("<b><font color='red'>" + warningMessage + "</font></b>"))
+                   .setCancelable(false)
+                   .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           // Do nothing, keep the dialog open
+                       }
+                   });
+            warningDialog = builder.create();
+            warningDialog.show();
         }
     }
 
@@ -509,6 +526,13 @@ public class DeviceDetailActivity extends AppCompatActivity {
             sendMessageToDevice("A");
         } else {
             sendMessageToDevice("D");
+            dismissWarningDialog();
+        }
+    }
+
+    private void dismissWarningDialog() {
+        if (warningDialog != null && warningDialog.isShowing()) {
+            warningDialog.dismiss();
         }
     }
 
