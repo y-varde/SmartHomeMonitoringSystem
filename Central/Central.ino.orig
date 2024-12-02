@@ -261,10 +261,36 @@ void armSystem() {
 void disarmSystem() {
   isArmed = false;
   Serial.println("System is disarmed");
+<<<<<<< HEAD
   updateLCDLine(3, "System is disarmed");
   HC12.println("D"); // Send disarm command to peripheral
 }
+
+void setSamplingRate() {
+  // Read the next characters for the sampling rate
+  String rateStr = "";
+  while (Serial1.available()) {
+    char c = Serial1.read();
+    if (isDigit(c)) {
+      rateStr += c;
+    } else {
+      break;
+    }
+  }
+  if (rateStr.length() > 0) {
+    samplingRate = rateStr.toInt() * 1000; // Convert to milliseconds
+    Serial.print("Sampling rate set to ");
+    Serial.print(samplingRate / 1000);
+    Serial.println(" seconds");
     updateLCDLine(3, "Sampling rate: " + String(samplingRate / 1000) + " sec");
   } else {
     Serial.println("Invalid sampling rate");
     updateLCDLine(3, "Invalid sampling rate");
+  }
+=======
+  lcd.setCursor(0, 3);
+  lcd.print("                    "); // Clear the line
+  lcd.setCursor(0, 3);
+  lcd.print("System is disarmed");
+>>>>>>> 2b8b575097b759e513ec5fd5424c4ef01d0cdf32
+}
