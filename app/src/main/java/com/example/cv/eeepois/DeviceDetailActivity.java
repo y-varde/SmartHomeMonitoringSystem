@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -53,6 +54,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private Button btnUpdateSamplingRate;
     private Button btnRefresh;
     private Button btnFetchReadings;
+    private Button btnDisconnect;
     private SeekBar seekBarSamplingRate;
     private Spinner modeSpinner;
     private EditText edtTempMinThreshold;
@@ -92,6 +94,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         btnUpdateSamplingRate = findViewById(R.id.btnUpdateSamplingRate);
         btnRefresh = findViewById(R.id.btnRefresh);
         btnFetchReadings = findViewById(R.id.btnFetchReadings);
+        btnDisconnect = findViewById(R.id.btnDisconnect);
         seekBarSamplingRate = findViewById(R.id.seekBarSamplingRate);
         modeSpinner = findViewById(R.id.mode_spinner);
         edtTempMinThreshold = findViewById(R.id.edtTempMinThreshold);
@@ -138,6 +141,13 @@ public class DeviceDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sendMessageToDevice("F");
+            }
+        });
+
+        btnDisconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disconnectBluetooth();
             }
         });
 
@@ -515,5 +525,18 @@ public class DeviceDetailActivity extends AppCompatActivity {
                 Toast.makeText(DeviceDetailActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void disconnectBluetooth() {
+        if (bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+            bluetoothGatt.close();
+            bluetoothGatt = null;
+        }
+    
+        // Transition back to MainActivity
+        Intent intent = new Intent(DeviceDetailActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

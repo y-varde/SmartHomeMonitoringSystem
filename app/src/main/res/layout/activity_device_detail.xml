@@ -165,5 +165,16 @@
             android:layout_height="wrap_content"
             android:text="Device Message"
             android:paddingBottom="16dp"/>
+
+        <Button
+            android:id="@+id/btnDisconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disconnect"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_red_dark"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
     </LinearLayout>
 </ScrollView>
