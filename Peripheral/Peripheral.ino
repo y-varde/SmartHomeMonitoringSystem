@@ -26,6 +26,7 @@ unsigned long solidStartMillis = 0; // Store the start time of the solid LED sta
 unsigned long samplingRate = 1000; // Default sampling rate in milliseconds
 unsigned long lastSampleTime = 0; // Store the last time the sensor was sampled
 int commandCount = 0; // Counter for commands received by the peripheral device
+const int buzzerPin = 8;
 
 void setup() {
   // Start serial communication
@@ -41,6 +42,7 @@ void setup() {
 
   // Set up LED pin
   pinMode(LED_PIN, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
 
   // Get initial position
   sensors_event_t event;
@@ -79,6 +81,7 @@ void handleCommands() {
       ledBlinking = false;
       ledSolid = false;
       digitalWrite(LED_PIN, LOW); // Turn off LED
+      stopBuzzer();
     } 
     else if (command.startsWith("S")) {
       setSamplingRate(command.substring(1));
@@ -135,6 +138,7 @@ void checkMovement() {
 
   // Check for significant movement
   if (armed && (deltaX > movementThreshold || deltaY > movementThreshold || deltaZ > movementThreshold)) {
+    playBuzzer();
     Serial.println("Door has been opened!!");
     HC12.println("Door has been opened!!");
 
@@ -187,4 +191,12 @@ void turnOnLED() {
 void turnOffLED() {
   digitalWrite(LED_PIN, LOW);
   Serial.println("LED turned off");
+}
+
+void playBuzzer() {
+  tone(buzzerPin, 1000); // Play tone at 1000 Hz
+}
+
+void stopBuzzer() {
+  noTone(buzzerPin); // Stop tone
 }

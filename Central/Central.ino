@@ -6,7 +6,6 @@
 // Pin Definitions
 const int gasPin = A3;
 const int tempPin = A1;
-const int buzzerPin = 8;
 
 // Bluetooth Serial Communication
 SoftwareSerial HC12(10, 11); // RX, TX
@@ -32,10 +31,6 @@ void initializeSerial() {
   HC12.begin(9600); // Initialize HC-12 serial communication
 }
 
-void initializePins() {
-  pinMode(buzzerPin, OUTPUT);
-}
-
 void initializeLCD() {
   Wire.begin();    // Initialize I2C communication
   lcd.init();      // Initialize the LCD
@@ -44,7 +39,6 @@ void initializeLCD() {
 
 void setup() {
   initializeSerial();
-  initializePins();
   initializeLCD();
   delayCount = samplingRate / 100;
   clearBluetoothBuffer();
@@ -177,13 +171,6 @@ String readTemperature() {
   float temp = getTemp();
   tempData += String((int)temp);
   tempData += " C\n";
-
-  if(temp > 43 || temp < 0) {
-    tempData += "Critical Temp!\n";
-    playBuzzer();
-  } else {
-    stopBuzzer();
-  }
   return tempData;
 }
 
@@ -192,13 +179,6 @@ String readGasConcentration() {
   float gas = getGas();
   gasData += String((int)gas);
   gasData += " ppm\n";
-
-  if(gas > 400) {
-    gasData += "Critical Gas!\n";
-    playBuzzer();
-  } else {
-    stopBuzzer();
-  }
 
   return gasData;
 }
@@ -228,22 +208,6 @@ void updateCommandCount() {
 
 void displayPeripheralMessage(String message) {
   updateLCDLine(3, message);
-}
-
-void checkCritical(float value, float upperLimit, float lowerLimit) {
-  if (value > upperLimit || value < lowerLimit) {
-    playBuzzer();
-  } else {
-    stopBuzzer();
-  }
-}
-
-void playBuzzer() {
-  tone(buzzerPin, 1000); // Play tone at 1000 Hz
-}
-
-void stopBuzzer() {
-  noTone(buzzerPin); // Stop tone
 }
 
 float getTemp() {
