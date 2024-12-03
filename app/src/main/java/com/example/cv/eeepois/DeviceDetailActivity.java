@@ -419,6 +419,14 @@ public class DeviceDetailActivity extends AppCompatActivity {
         if (message.contains("Readings Updated")) {
             showToast("Latest sensor readings retrieved");
         }
+
+        // Update LED switch state
+        if (!isArmed) {
+            switchLED.setVisibility(View.VISIBLE);
+        } 
+        else {
+            switchLED.setVisibility(View.GONE);
+        }
     }
 
     private void showWarningDialog(String warningMessage) {
