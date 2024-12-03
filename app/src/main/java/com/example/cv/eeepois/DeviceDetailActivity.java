@@ -520,6 +520,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtGasMinThreshold.setVisibility(View.VISIBLE);
             edtGasMaxThreshold.setVisibility(View.VISIBLE);
             btnFetchReadings.setVisibility(View.VISIBLE);
+            btnRefresh.setVisibility(View.VISIBLE);
         } else {
             btnArmSystem.setVisibility(View.GONE);
             txtSamplingRate.setVisibility(View.GONE);
@@ -531,6 +532,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtGasMinThreshold.setVisibility(View.GONE);
             edtGasMaxThreshold.setVisibility(View.GONE);
             btnFetchReadings.setVisibility(View.GONE);
+            btnRefresh.setVisibility(View.GONE);
         }
     }
 

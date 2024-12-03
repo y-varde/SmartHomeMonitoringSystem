@@ -156,7 +156,7 @@
             android:id="@+id/btnRefresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Refresh"
+            android:text="Reset"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"/>
 
