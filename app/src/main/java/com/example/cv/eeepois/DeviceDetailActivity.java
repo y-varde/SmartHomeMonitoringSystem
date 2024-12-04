@@ -62,6 +62,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private Button btnRefresh;
     private Button btnFetchReadings;
     private Button btnDisconnect;
+    private Button btnUpdateThresholds;
     private SeekBar seekBarSamplingRate;
     private Spinner modeSpinner;
     private EditText edtTempMinThreshold;
@@ -105,6 +106,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
         btnRefresh = findViewById(R.id.btnRefresh);
         btnFetchReadings = findViewById(R.id.btnFetchReadings);
         btnDisconnect = findViewById(R.id.btnDisconnect);
+        btnUpdateThresholds = findViewById(R.id.btnUpdateThresholds);
         seekBarSamplingRate = findViewById(R.id.seekBarSamplingRate);
         modeSpinner = findViewById(R.id.mode_spinner);
         edtTempMinThreshold = findViewById(R.id.edtTempMinThreshold);
@@ -175,6 +177,12 @@ public class DeviceDetailActivity extends AppCompatActivity {
             }
         });
 
+        btnUpdateThresholds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateThresholds();
+            }
+        });
 
         seekBarSamplingRate.setMax(19);
         seekBarSamplingRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -623,5 +631,13 @@ public class DeviceDetailActivity extends AppCompatActivity {
         Intent intent = new Intent(DeviceDetailActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void updateThresholds() {
+        int tempMinThreshold = Integer.parseInt(edtTempMinThreshold.getText().toString());
+        int tempMaxThreshold = Integer.parseInt(edtTempMaxThreshold.getText().toString());
+        int humidityThreshold = Integer.parseInt(edtHumidityThreshold.getText().toString());
+        int gasMinThreshold = Integer.parseInt(edtGasMinThreshold.getText().toString());
+        int gasMaxThreshold = Integer.parseInt(edtGasMaxThreshold.getText().toString());
     }
 }

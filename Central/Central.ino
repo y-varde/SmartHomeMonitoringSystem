@@ -147,8 +147,8 @@ void fetchSensorReadings() {
   float humidity = getHumidity();
 
   String dataPhone = readTemperature();
-  dataPhone += readGasConcentration();
   dataPhone += readHumidity();
+  dataPhone += readGasConcentration();
   
   if (peripheralWarning.length() > 0) {
     dataPhone += "Warning: " + peripheralWarning + "\n";
