@@ -86,6 +86,8 @@ public class DeviceDetailActivity extends AppCompatActivity {
     private int humidityThreshold = 70; // Default humidity threshold
     private int gasMinThreshold = 0; // Default minimum gas concentration threshold
     private int gasMaxThreshold = 400; // Default maximum gas concentration threshold
+    private long lastAlertTime = 0;
+    private static final long ALERT_INTERVAL = 20000; // 20 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -395,21 +397,32 @@ public class DeviceDetailActivity extends AppCompatActivity {
 
     private void displayMessage(String message) {
         String[] lines = message.split("\n");
+        boolean isOutOfBounds = false;
+        StringBuilder outOfBoundsMessage = new StringBuilder("The following readings are out of bounds:\n");
         if (lines.length > 0) {
             String temperatureLine = lines[0];
             if (showInFahrenheit) {
                 temperatureLine = convertToFahrenheit(temperatureLine);
             }
             txtTemperature.setText(temperatureLine);
-            checkThreshold(txtTemperature, temperatureLine, tempMinThreshold, tempMaxThreshold);
+            if (checkThreshold(txtTemperature, temperatureLine, tempMinThreshold, tempMaxThreshold)) {
+                isOutOfBounds = true;
+                outOfBoundsMessage.append("Temperature: ").append(temperatureLine).append("\n");
+            }
         }
         if (lines.length > 1) {
             txtHumidity.setText(lines[1]);
-            checkThreshold(txtHumidity, lines[1], humidityThreshold);
+            if (checkThreshold(txtHumidity, lines[1], humidityThreshold)) {
+                isOutOfBounds = true;
+                outOfBoundsMessage.append("Humidity: ").append(lines[1]).append("\n");
+            }
         }
         if (lines.length > 2) {
             txtGasConcentration.setText(lines[2]);
-            checkThreshold(txtGasConcentration, lines[2], gasMinThreshold, gasMaxThreshold);
+            if (checkThreshold(txtGasConcentration, lines[2], gasMinThreshold, gasMaxThreshold)) {
+                isOutOfBounds = true;
+                outOfBoundsMessage.append("Gas Concentration: ").append(lines[2]).append("\n");
+            }
         }
         StringBuilder otherLines = new StringBuilder();
         for (int i = 3; i < lines.length; i++) {
@@ -435,48 +448,60 @@ public class DeviceDetailActivity extends AppCompatActivity {
         else {
             switchLED.setVisibility(View.GONE);
         }
+
+        // Display out-of-bounds message if necessary
+        if (isOutOfBounds) {
+            showWarningDialog(outOfBoundsMessage.toString());
+        }
+            
     }
 
     private void showWarningDialog(String warningMessage) {
-        if (warningDialog == null || !warningDialog.isShowing()) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastAlertTime >= ALERT_INTERVAL) {
+            lastAlertTime = currentTime;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Warning")
-                   .setMessage(Html.fromHtml("<b><font color='red'>" + warningMessage + "</font></b>"))
-                   .setCancelable(false)
+                   .setMessage(warningMessage)
                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
-                           // Do nothing, keep the dialog open
+                           // Do nothing, just close the dialog
                        }
-                   });
-            warningDialog = builder.create();
-            warningDialog.show();
+                   })
+                   .show();
         }
     }
 
-    private void checkThreshold(TextView textView, String value, int minThreshold, int maxThreshold) {
+    private boolean checkThreshold(TextView textView, String value, int minThreshold, int maxThreshold) {
         try {
             int intValue = Integer.parseInt(value.replaceAll("[^0-9]", ""));
             if (intValue < minThreshold || intValue > maxThreshold) {
                 textView.setTextColor(Color.RED);
+                return true;
             } else {
                 textView.setTextColor(Color.BLACK);
+                return false;
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void checkThreshold(TextView textView, String value, int threshold) {
+    private boolean checkThreshold(TextView textView, String value, int threshold) {
         try {
             int intValue = Integer.parseInt(value.replaceAll("[^0-9]", ""));
             if (intValue > threshold) {
                 textView.setTextColor(Color.RED);
+                return true;
             } else {
                 textView.setTextColor(Color.BLACK);
+                return false;
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
