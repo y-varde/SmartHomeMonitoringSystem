@@ -562,6 +562,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtGasMaxThreshold.setVisibility(View.VISIBLE);
             btnFetchReadings.setVisibility(View.VISIBLE);
             btnRefresh.setVisibility(View.VISIBLE);
+            btnUpdateThresholds.setVisibility(View.VISIBLE);
 
             //Make edittexts editable
             edtTempMinThreshold.setEnabled(true);
@@ -581,6 +582,7 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtGasMaxThreshold.setVisibility(View.VISIBLE);
             btnFetchReadings.setVisibility(View.GONE);
             btnRefresh.setVisibility(View.GONE);
+            btnUpdateThresholds.setVisibility(View.GONE);
 
             //Make edittexts uneditable
             edtTempMinThreshold.setEnabled(false);
