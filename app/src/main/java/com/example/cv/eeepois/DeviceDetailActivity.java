@@ -529,18 +529,32 @@ public class DeviceDetailActivity extends AppCompatActivity {
             edtGasMaxThreshold.setVisibility(View.VISIBLE);
             btnFetchReadings.setVisibility(View.VISIBLE);
             btnRefresh.setVisibility(View.VISIBLE);
+
+            //Make edittexts editable
+            edtTempMinThreshold.setEnabled(true);
+            edtTempMaxThreshold.setEnabled(true);
+            edtHumidityThreshold.setEnabled(true);
+            edtGasMinThreshold.setEnabled(true);
+            edtGasMaxThreshold.setEnabled(true);
         } else {
             btnArmSystem.setVisibility(View.GONE);
             txtSamplingRate.setVisibility(View.GONE);
             seekBarSamplingRate.setVisibility(View.GONE);
             btnUpdateSamplingRate.setVisibility(View.GONE);
-            edtTempMinThreshold.setVisibility(View.GONE);
-            edtTempMaxThreshold.setVisibility(View.GONE);
-            edtHumidityThreshold.setVisibility(View.GONE);
-            edtGasMinThreshold.setVisibility(View.GONE);
-            edtGasMaxThreshold.setVisibility(View.GONE);
+            edtTempMinThreshold.setVisibility(View.VISIBLE);
+            edtTempMaxThreshold.setVisibility(View.VISIBLE);
+            edtHumidityThreshold.setVisibility(View.VISIBLE);
+            edtGasMinThreshold.setVisibility(View.VISIBLE);
+            edtGasMaxThreshold.setVisibility(View.VISIBLE);
             btnFetchReadings.setVisibility(View.GONE);
             btnRefresh.setVisibility(View.GONE);
+
+            //Make edittexts uneditable
+            edtTempMinThreshold.setEnabled(false);
+            edtTempMaxThreshold.setEnabled(false);
+            edtHumidityThreshold.setEnabled(false);
+            edtGasMinThreshold.setEnabled(false);
+            edtGasMaxThreshold.setEnabled(false);
         }
     }
 
