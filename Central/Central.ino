@@ -216,7 +216,9 @@ float getTemp() {
 }
 
 float getHumidity() {
-  return dht11.readHumidity();
+  float h  = dht11.readHumidity();
+  dht11.readHumidity();
+  return h;
 }
 
 float getGas() {
